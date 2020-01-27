@@ -2,7 +2,7 @@
 
 An open source status page system fork from [Cachet](https://cachet.io).
 
-![ICON](logo.svg)
+![ICON](public/img/cachet-logo.svg)
 
 We thought that the Cachet development is too slow and heavy.
 
