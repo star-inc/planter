@@ -1,10 +1,10 @@
 {
-    "name": "cachethq/cachet",
-    "description": "An open source status page system, for everyone.",
+    "name": "star-inc/y.mume",
+    "description": "An open source status page system.",
     "keywords": [
         "laravel",
-        "cachet",
-        "alt-three",
+        "y.mume",
+        "star-inc",
         "status",
         "page"
     ],
@@ -12,16 +12,8 @@
     "license": "BSD-3-Clause",
     "authors": [
         {
-            "name": "James Brooks",
-            "email": "james@alt-three.com"
-        },
-        {
-            "name": "Graham Campbell",
-            "email": "graham@alt-three.com"
-        },
-        {
-            "name": "Joseph Cohen",
-            "email": "joe@alt-three.com"
+            "name": "SuperSonic",
+            "email": "supersonic@livemail.tw"
         }
     ],
     "replace": {
@@ -89,14 +81,14 @@
     },
     "scripts": {
         "post-root-package-install": [
-          "@php -r \"file_exists('.env') || copy('.env.example', '.env');\""
+            "@php -r \"file_exists('.env') || copy('.env.example', '.env');\""
         ],
         "post-create-project-cmd": [
-          "@php artisan key:generate"
+            "@php artisan key:generate"
         ],
         "post-autoload-dump": [
-          "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
-          "@php artisan package:discover"
+            "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
+            "@php artisan package:discover"
         ]
     },
     "config": {

@@ -1,6 +1,6 @@
 # p.mume
 
-An open source status page system fork from [Cachet](https://cachet.io).
+An open source status page system fork from [Cachet](https://cachet.io) `v2.4.0-dev`.
 
 ![ICON](public/img/cachet-logo.svg)
 
