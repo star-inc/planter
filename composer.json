@@ -58,7 +58,9 @@
         "graham-campbell/analyzer": "^2.1",
         "mockery/mockery": "^1.2",
         "phpunit/phpunit": "^7.4",
-        "tightenco/mailthief": "^0.3.14"
+        "tightenco/mailthief": "^0.3.14",
+        "beyondcode/laravel-dump-server": "~1.0",
+        "nunomaduro/collision": "^2.0"
     },
     "suggest": {
         "ext-apc": "APC Support cache driver."
