@@ -5,7 +5,7 @@ if [ -z "$CONFIG_SOURCE_URL" ]; then
     echo "\$CONFIG_SOURCE_URL is not exists"
     exit
 elif [ -z "$INSTALL_DEPENDENCIES" ]; then
-    INSTALL_DEPENDENCIES=false
+    INSTALL_DEPENDENCIES=true
 fi
 
 # Download config
