@@ -82,7 +82,11 @@ async function main() {
         console.warn(e);
         previousStat = {sha: null};
     }
-    if (!("sha" in previousStat) || previousStat.sha === localHash) return;
+    if (
+        !("data" in previousStat) ||
+        !("sha" in previousStat.data) ||
+        previousStat.data.sha === localHash
+    ) return;
     const timestamp = new Date().getTime();
     try {
         const result = await newStat(`#${timestamp}`, data, localHash);
