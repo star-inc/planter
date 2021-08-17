@@ -70,10 +70,21 @@ async function main() {
     const result = await pingSites(config);
     const data = JSON.stringify(result);
     const localHash = sha256(data);
-    const previousStat = await getPreviousStat();
+    let previousStat;
+    try {
+        previousStat = await getPreviousStat();
+    } catch (e) {
+        console.warn(e);
+        previousStat = {sha: null};
+    }
     if (!("sha" in previousStat) || previousStat.sha === localHash) return;
     const timestamp = new Date().getTime();
-    console.log(newStat(`#${timestamp}`, data, localHash))
+    try {
+        const result = await newStat(`#${timestamp}`, data, localHash);
+        console.log(result);
+    } catch (e) {
+        console.error(e);
+    }
 }
 
 main();
