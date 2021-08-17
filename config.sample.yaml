@@ -13,7 +13,7 @@ sites:
         endpoint: "https://example.com"
   - name: Second Server
     description: This is a server, too.
-      endpoint: "https://example.com"
+    endpoint: "https://example.com"
     children:
       - name: Service
         description: This is a demo for p.mume.
