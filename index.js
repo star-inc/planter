@@ -24,7 +24,7 @@ async function getConfigSource() {
     return jsYaml.load(configFile.data);
 }
 
-async function ping(site) {
+async function ping(site, parent = null) {
     if (!("endpoint" in site)) return;
     let stat;
     try {
@@ -33,7 +33,9 @@ async function ping(site) {
         console.log(e);
         stat = e.response;
     }
-    return {[site.name]: stat.status === 200};
+    site.status = stat.status;
+    site.parent = parent;
+    return site;
 }
 
 async function pingSites(config) {
@@ -41,9 +43,12 @@ async function pingSites(config) {
     const sitePromises = config.sites.map(ping);
     const childrenPromises = config.sites.map((site) => {
         if (!("children" in site)) return;
-        return Promise.all(site.children.map(ping));
+        return Promise.all(site.children.map((child) => ping(child, site.name)));
     });
-    return await Promise.all([...sitePromises, ...childrenPromises]);
+    return await Promise.all([
+        ...sitePromises.filter(promise => !!promise),
+        ...childrenPromises.filter(promise => !!promise)
+    ]);
 }
 
 async function getPreviousStat() {
