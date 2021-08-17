@@ -72,8 +72,9 @@ async function newStat(message, data, previousSha = null) {
 async function main() {
     const config = await getConfigSource();
     if (!(config instanceof Object)) return;
+    const timestamp = new Date().getTime();
     const result = await pingSites(config);
-    const data = JSON.stringify(result);
+    const data = JSON.stringify({timestamp, result});
     const localHash = sha256(data);
     let previousStat;
     try {
@@ -87,7 +88,6 @@ async function main() {
         !("sha" in previousStat.data) ||
         previousStat.data.sha === localHash
     ) return;
-    const timestamp = new Date().getTime();
     const previousSha = previousStat.data.sha;
     try {
         const result = await newStat(`#${timestamp}`, data, previousSha);
