@@ -1,0 +1,16 @@
+name: Plant the p.mume
+
+on:
+  schedule:
+    - cron: 0 1/1 * * *
+
+jobs:
+  plant:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout 🐶
+        uses: actions/checkout@v2.3.1
+      - name: Start 💫
+        run: |
+          npm install
+          node index.js
