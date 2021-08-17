@@ -57,14 +57,14 @@ async function getPreviousStat() {
     return await octokit.request(route, options);
 }
 
-async function newStat(message, data, sha = null) {
+async function newStat(message, content, sha = null) {
     const route = `PUT /repos/{owner}/{repo}/contents/stat.json`;
     const options = {
         owner: incidentsOwner,
         repo: incidentsRepository,
-        sha: sha ? sha : sha256(data),
-        content: encode(data),
+        content,
         message,
+        sha,
     };
     return await octokit.request(route, options);
 }
@@ -73,7 +73,7 @@ async function main() {
     const config = await getConfigSource();
     if (!(config instanceof Object)) return;
     const result = await pingSites(config);
-    const data = JSON.stringify(result);
+    const data = encode(JSON.stringify(result));
     const localHash = sha256(data);
     let previousStat;
     try {
