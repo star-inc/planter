@@ -26,7 +26,13 @@ async function getConfigSource() {
 
 async function ping(site) {
     if (!("endpoint" in site)) return;
-    const stat = await pingOperator.get(site.endpoint);
+    let stat;
+    try {
+        stat = await pingOperator.get(site.endpoint);
+    } catch (e) {
+        console.log(e);
+        stat = e.response;
+    }
     return {[site.name]: stat.status === 200};
 }
 
