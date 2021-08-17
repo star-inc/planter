@@ -17,3 +17,8 @@ jobs:
         run: |
           npm install
           node index.js
+        env:
+          ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+          CONFIG_SOURCE_URL: ${{ secrets.CONFIG_SOURCE_URL }}
+          INCIDENT_OWNER: ${{ secrets.INCIDENT_OWNER }}
+          INCIDENT_REPOSITORY: ${{ secrets.INCIDENT_REPOSITORY }}
