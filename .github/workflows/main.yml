@@ -1,8 +1,11 @@
 name: Plant the p.mume
 
 on:
+  push:
+    branches:
+      - master
   schedule:
-    - cron: 0 1/1 * * *
+    - cron: 0 * * * *
 
 jobs:
   plant:
