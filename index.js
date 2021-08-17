@@ -40,7 +40,7 @@ async function ping(site, parent = null) {
 
 async function pingSites(config) {
     if (!("sites" in config)) return;
-    const sitePromises = config.sites.map(ping);
+    const sitePromises = config.sites.map((site) => ping(site));
     const childrenPromises = config.sites.map((site) => {
         if (!("children" in site)) return;
         return Promise.all(site.children.map((child) => ping(child, site.name)));
