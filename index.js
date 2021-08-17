@@ -51,22 +51,59 @@ async function pingSites(config) {
     ]);
 }
 
-async function getPreviousStat() {
-    const route = `GET /repos/{owner}/{repo}/contents/stat.json`;
+function getPreviousUpdateInfo() {
+    const route = `GET /repos/{owner}/{repo}/contents/update.json`;
     const options = {owner: incidentsOwner, repo: incidentsRepository};
-    return await octokit.request(route, options);
+    return octokit.request(route, options);
 }
 
-async function newStat(message, data, previousSha = null) {
+function getPreviousStat() {
+    const route = `GET /repos/{owner}/{repo}/contents/stat.json`;
+    const options = {owner: incidentsOwner, repo: incidentsRepository};
+    return octokit.request(route, options);
+}
+
+async function newStat(timestamp, data, previousStatSha = null) {
+    let previousUpdateInfo;
+    try {
+        previousUpdateInfo = await getPreviousUpdateInfo();
+    } catch (e) {
+        console.warn(e);
+        previousUpdateInfo = {sha: null};
+    }
+    if (
+        !("data" in previousUpdateInfo) ||
+        !("sha" in previousUpdateInfo.data)
+    ) return;
+    const previousUpdateInfoSha = previousUpdateInfo.sha;
+    return await Promise.all([
+        uploadUpdateInfo({timestamp}, previousUpdateInfoSha),
+        uploadStat(timestamp, data, previousStatSha)
+    ]);
+}
+
+function uploadUpdateInfo(info, previousSha = null) {
+    const route = `PUT /repos/{owner}/{repo}/contents/update.json`;
+    const options = {
+        owner: incidentsOwner,
+        repo: incidentsRepository,
+        content: encode(JSON.stringify(info)),
+        sha: previousSha,
+        message: `#${info.timestamp}`,
+    };
+    return octokit.request(route, options);
+}
+
+function uploadStat(timestamp, data, previousSha = null) {
     const route = `PUT /repos/{owner}/{repo}/contents/stat.json`;
     const options = {
         owner: incidentsOwner,
         repo: incidentsRepository,
         content: encode(data),
         sha: previousSha,
-        message,
+        message: `#${timestamp}`,
     };
-    return await octokit.request(route, options);
+    return octokit.request(route, options);
 }
 
 async function main() {
@@ -74,7 +111,7 @@ async function main() {
     if (!(config instanceof Object)) return;
     const timestamp = new Date().getTime();
     const result = await pingSites(config);
-    const data = JSON.stringify({timestamp, result});
+    const data = JSON.stringify(result);
     const localHash = sha256(data);
     let previousStat;
     try {
@@ -90,7 +127,7 @@ async function main() {
     ) return;
     const previousSha = previousStat.data.sha;
     try {
-        const result = await newStat(`#${timestamp}`, data, previousSha);
+        const result = await newStat(timestamp, data, previousSha);
         console.log(result);
     } catch (e) {
         console.error(e);
