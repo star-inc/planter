@@ -17,7 +17,10 @@
   },
   "homepage": "https://github.com/star-inc/planter#readme",
   "dependencies": {
+    "@octokit/core": "^3.5.1",
     "axios": "^0.21.1",
+    "js-base64": "^3.6.1",
+    "js-sha256": "^0.9.0",
     "js-yaml": "^4.1.0"
   }
 }
