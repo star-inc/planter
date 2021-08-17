@@ -17,6 +17,8 @@ jobs:
       - name: Install and Build
         run: |
           sh deploy.sh
+        env:
+          CONFIG_SOURCE_URL: ${{ secret.CONFIG_SOURCE_URL }}
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@4.1.4
         with:
