@@ -102,7 +102,7 @@ function uploadUpdateInfo(info, previousSha = null) {
         repo: incidentsRepository,
         content: encode(JSON.stringify(info)),
         sha: previousSha,
-        message: `#${info.timestamp}`,
+        message: `UpdateInfo #${info.timestamp}`,
     };
     return octokit.request(route, options);
 }
@@ -114,7 +114,7 @@ function uploadState(timestamp, data, previousSha = null) {
         repo: incidentsRepository,
         content: encode(data),
         sha: previousSha,
-        message: `#${timestamp}`,
+        message: `State #${timestamp}`,
     };
     return octokit.request(route, options);
 }
