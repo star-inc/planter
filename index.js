@@ -119,8 +119,8 @@ async function main() {
     }
     if (!("data" in previousState)) return;
     if (!("content" in previousState.data)) return;
-    const localHash = sha256(`${encode(data)}\n`);
-    const remoteHash = sha256(previousState.data.content);
+    const localHash = sha256(encode(data));
+    const remoteHash = sha256(previousState.data.content.replace(/\n/g, ""));
     if (localHash === remoteHash) return;
     if (!("sha" in previousState.data)) return;
     const previousSha = previousState.data.sha;
