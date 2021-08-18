@@ -1,10 +1,17 @@
 # p.mume planter
 
-![Version](https://img.shields.io/badge/v2.0.0-OpenSource-0099FF.svg) ![Travis-CI](https://travis-ci.com/star-inc/p.mume.svg?branch=master) ![Scrutinizer-CI](https://scrutinizer-ci.com/g/star-inc/p.mume/badges/quality-score.png?b=master) ![License](https://img.shields.io/badge/license-BSD--3--Clause-177.svg) ![Vue](https://img.shields.io/badge/Vue-v2-097.svg)
+![Version](https://img.shields.io/badge/v2.0.0-OpenSource-0099FF.svg)
 
 All static status page system.
 
 ![ICON](logo.svg)
+
+# What is planter
+
+Planter is an operator that helps [p.mume](https://github.com/star-inc/p.mume) to request endpoints of servers and its services,
+to fetch information and trigger the webhooks if there are any incident updates.
+
+Planter is powered by GitHub Action, to execute the script on an independent environment, and collect the faults from the endpoints.
 
 ## License
 
