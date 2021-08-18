@@ -1,9 +1,9 @@
 const axios = require('axios');
 const jsYaml = require('js-yaml');
 const {Octokit} = require("@octokit/core");
+const {createAppAuth} = require("@octokit/auth-app");
 const {sha256} = require('js-sha256');
 const {encode} = require('js-base64');
-const jwt = require('jsonwebtoken');
 
 const timestamp = new Date().getTime();
 
@@ -18,20 +18,19 @@ pingOperator.interceptors.response.use(function (response) {
     return Promise.reject(error);
 });
 
-let auth;
+let octokit;
 if (process.env.ACCESS_TYPE === "github_app") {
     // GitHub App JWT Token
-    const privateKey = process.env.ACCESS_TOKEN;
-    auth = jwt.sign({
-        iat: timestamp,
-        exp: timestamp + (10 * 60),
-        iss: process.env.ACCESS_APP_ID
-    }, privateKey, {algorithm: 'RS256'});
+    const appId = process.env.ACCESS_APP_ID;
+    const installationId = process.env.ACCESS_INSTALLATION_ID;
+    const privateKey = process.env.ACCESS_TOKEN.replace(/\\n/g, "\n");
+    auth = {appId, privateKey, installationId};
+    octokit = new Octokit({authStrategy: createAppAuth, auth});
 } else {
     // Personal Token
     auth = process.env.ACCESS_TOKEN;
+    octokit = new Octokit({auth});
 }
-const octokit = new Octokit({auth});
 
 async function getConfigSource() {
     if (configSource === undefined) return;
@@ -87,8 +86,8 @@ async function newState(timestamp, data, previousStateSha = null) {
         console.warn(e);
         previousUpdateInfo = {data: {sha: null}};
     }
-    if (!("data" in previousUpdateInfo)) return;
-    if (!("content" in previousUpdateInfo.data)) return;
+    if (!("data" in previousUpdateInfo)) process.exit(1);
+    if (!("content" in previousUpdateInfo.data)) process.exit(1);
     const previousUpdateInfoSha = previousUpdateInfo.data.sha;
     return [
         await uploadUpdateInfo({timestamp}, previousUpdateInfoSha),
@@ -122,7 +121,7 @@ function uploadState(timestamp, data, previousSha = null) {
 
 async function main() {
     const config = await getConfigSource();
-    if (!(config instanceof Object)) return;
+    if (!(config instanceof Object)) process.exit(1);
     const result = await pingSites(config);
     const data = JSON.stringify(result);
     let previousState;
@@ -132,12 +131,12 @@ async function main() {
         console.warn(e);
         previousState = {data: {sha: null}};
     }
-    if (!("data" in previousState)) return;
-    if (!("content" in previousState.data)) return;
+    if (!("data" in previousState)) process.exit(1);
+    if (!("content" in previousState.data)) process.exit(1);
     const localHash = sha256(encode(data));
     const remoteHash = sha256(previousState.data.content.replace(/\n/g, ""));
     if (localHash === remoteHash) return;
-    if (!("sha" in previousState.data)) return;
+    if (!("sha" in previousState.data)) process.exit(1);
     const previousSha = previousState.data.sha;
     try {
         const result = await newState(timestamp, data, previousSha);
