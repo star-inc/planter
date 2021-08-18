@@ -1,105 +1,60 @@
 <template>
-  <div class="page-container">
-    <md-app md-waterfall md-mode="overlap">
-      <md-app-toolbar class="md-primary md-large">
-        <div class="md-toolbar-row">
-          <md-button class="md-icon-button" @click="menuVisible = !menuVisible">
-            <md-icon>menu</md-icon>
-          </md-button>
+  <v-app>
+    <v-app-bar
+      app
+      color="primary"
+      dark
+    >
+      <div class="d-flex align-center">
+        <v-img
+          alt="Vuetify Logo"
+          class="shrink mr-2"
+          contain
+          src="https://cdn.vuetifyjs.com/images/logos/vuetify-logo-dark.png"
+          transition="scale-transition"
+          width="40"
+        />
 
-          <span class="md-title">
-            <img class="logo" alt="p.mume" src="@/assets/logo.svg" />
-          </span>
-        </div>
-      </md-app-toolbar>
+        <v-img
+          alt="Vuetify Name"
+          class="shrink mt-1 hidden-sm-and-down"
+          contain
+          min-width="100"
+          src="https://cdn.vuetifyjs.com/images/logos/vuetify-name-dark.png"
+          width="100"
+        />
+      </div>
 
-      <md-app-drawer :md-active.sync="menuVisible">
-        <md-toolbar class="md-transparent" md-elevation="0">
-          <img class="logo" alt="p.mume" src="@/assets/logo.svg" />
-        </md-toolbar>
+      <v-spacer></v-spacer>
 
-        <md-list>
-          <md-list-item @click="home">
-            <md-icon>home</md-icon>
-            <span class="md-list-item-text">Home</span>
-          </md-list-item>
+      <v-btn
+        href="https://github.com/vuetifyjs/vuetify/releases/latest"
+        target="_blank"
+        text
+      >
+        <span class="mr-2">Latest Release</span>
+        <v-icon>mdi-open-in-new</v-icon>
+      </v-btn>
+    </v-app-bar>
 
-          <md-list-item @click="incidents">
-            <md-icon>book</md-icon>
-            <span class="md-list-item-text">Incidents</span>
-          </md-list-item>
-
-          <md-list-item @click="subscribe">
-            <md-icon>send</md-icon>
-            <span class="md-list-item-text">Subscribe</span>
-          </md-list-item>
-
-          <md-list-item @click="star">
-            <md-icon>star</md-icon>
-            <span class="md-list-item-text">Star Inc.</span>
-          </md-list-item>
-
-          <md-list-item @click="about">
-            <md-icon>info</md-icon>
-            <span class="md-list-item-text">About</span>
-          </md-list-item>
-        </md-list>
-      </md-app-drawer>
-
-      <md-app-content>
-       <router-view />
-      </md-app-content>
-    </md-app>
-  </div>
+    <v-main>
+      <HelloWorld/>
+    </v-main>
+  </v-app>
 </template>
 
 <script>
+import HelloWorld from './components/HelloWorld';
+
 export default {
-  name: "Application",
-  methods: {
-    _routerMove(targetName){
-      if (targetName != this.$route.name) {
-        this.$router.push({ name: targetName });
-      }
-      this.menuVisible = false;
-    },
-    home() {
-      this._routerMove("Status");
-    },
-    incidents() {
-      this._routerMove("Incidents");
-    },
-    subscribe() {
-      this._routerMove("Subscribe");
-    },
-    star: () => (location.href = "https://starinc.xyz"),
-    about() {
-      this._routerMove("About");
-    },
+  name: 'App',
+
+  components: {
+    HelloWorld,
   },
+
   data: () => ({
-    menuVisible: false,
+    //
   }),
 };
 </script>
-
-<style lang="scss" scoped>
-.md-app {
-  width: 100%;
-  height: 100vh;
-}
-
-.md-toolbar {
-  background: #fff;
-}
-
-.md-drawer {
-  width: 250px;
-}
-
-.logo {
-  width: auto;
-  height: 100px;
-  padding: 15px;
-}
-</style>
