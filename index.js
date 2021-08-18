@@ -50,6 +50,9 @@ async function ping(site, parent = null) {
     }
     site.status = state.status;
     site.parent = parent;
+    if (state.data.startsWith("\xef")) {
+        site.metadata = state.data;
+    }
     return site;
 }
 
@@ -148,8 +151,14 @@ async function main() {
         console.log(result);
     } catch (e) {
         console.error(e);
+        process.exit(1);
     }
-    await requestWebhooks(config, result)
+    try {
+        await requestWebhooks(config, result)
+    } catch (e) {
+        console.error(e);
+        process.exit(1);
+    }
 }
 
 main();
