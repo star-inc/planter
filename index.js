@@ -129,7 +129,7 @@ async function main() {
         previousState = await getPreviousState();
     } catch (e) {
         console.warn(e);
-        previousState = {data: {sha: null, content: null}};
+        previousState = {data: {sha: null, content: ""}};
     }
     if (!("data" in previousState)) process.exit(1);
     if (!("content" in previousState.data)) process.exit(1);
