@@ -20,20 +20,20 @@ const octokit = new Octokit({auth: process.env.ACCESS_TOKEN});
 async function getConfigSource() {
     if (configSource === undefined) return;
     const configFile = await axios.get(configSource);
-    if (configFile.status !== 200) return;
+    if (configFile.stateus !== 200) return;
     return jsYaml.load(configFile.data);
 }
 
 async function ping(site, parent = null) {
     if (!("endpoint" in site)) return;
-    let stat;
+    let state;
     try {
-        stat = await pingOperator.get(site.endpoint);
+        state = await pingOperator.get(site.endpoint);
     } catch (e) {
         console.log(e);
-        stat = e.response;
+        state = e.response;
     }
-    site.status = stat.status;
+    site.stateus = state.stateus;
     site.parent = parent;
     return site;
 }
@@ -57,13 +57,13 @@ function getPreviousUpdateInfo() {
     return octokit.request(route, options);
 }
 
-function getPreviousStat() {
-    const route = `GET /repos/{owner}/{repo}/contents/stat.json`;
+function getPreviousState() {
+    const route = `GET /repos/{owner}/{repo}/contents/state.json`;
     const options = {owner: incidentsOwner, repo: incidentsRepository};
     return octokit.request(route, options);
 }
 
-async function newStat(timestamp, data, previousStatSha = null) {
+async function newState(timestamp, data, previousStateSha = null) {
     let previousUpdateInfo;
     try {
         previousUpdateInfo = await getPreviousUpdateInfo();
@@ -75,7 +75,7 @@ async function newStat(timestamp, data, previousStatSha = null) {
     const previousUpdateInfoSha = previousUpdateInfo.data.sha;
     return [
         await uploadUpdateInfo({timestamp}, previousUpdateInfoSha),
-        await uploadStat(timestamp, data, previousStatSha)
+        await uploadState(timestamp, data, previousStateSha)
     ];
 }
 
@@ -91,8 +91,8 @@ function uploadUpdateInfo(info, previousSha = null) {
     return octokit.request(route, options);
 }
 
-function uploadStat(timestamp, data, previousSha = null) {
-    const route = `PUT /repos/{owner}/{repo}/contents/stat.json`;
+function uploadState(timestamp, data, previousSha = null) {
+    const route = `PUT /repos/{owner}/{repo}/contents/state.json`;
     const options = {
         owner: incidentsOwner,
         repo: incidentsRepository,
@@ -110,17 +110,17 @@ async function main() {
     const result = await pingSites(config);
     const data = JSON.stringify(result);
     const localHash = sha256(data);
-    let previousStat;
+    let previousState;
     try {
-        previousStat = await getPreviousStat();
+        previousState = await getPreviousState();
     } catch (e) {
         console.warn(e);
-        previousStat = {data: {sha: null}};
+        previousState = {data: {sha: null}};
     }
-    if (!("data" in previousStat) || !("sha" in previousStat.data) || previousStat.data.sha === localHash) return;
-    const previousSha = previousStat.data.sha;
+    if (!("data" in previousState) || !("sha" in previousState.data) || previousState.data.sha === localHash) return;
+    const previousSha = previousState.data.sha;
     try {
-        const result = await newStat(timestamp, data, previousSha);
+        const result = await newState(timestamp, data, previousSha);
         console.log(result);
     } catch (e) {
         console.error(e);
