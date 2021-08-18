@@ -87,7 +87,7 @@ async function newState(timestamp, data, previousStateSha = null) {
         previousUpdateInfo = {data: {sha: null}};
     }
     if (!("data" in previousUpdateInfo)) process.exit(1);
-    if (!("content" in previousUpdateInfo.data)) process.exit(1);
+    if (!("sha" in previousUpdateInfo.data)) process.exit(1);
     const previousUpdateInfoSha = previousUpdateInfo.data.sha;
     return [
         await uploadUpdateInfo({timestamp}, previousUpdateInfoSha),
@@ -129,7 +129,7 @@ async function main() {
         previousState = await getPreviousState();
     } catch (e) {
         console.warn(e);
-        previousState = {data: {sha: null}};
+        previousState = {data: {sha: null, content: null}};
     }
     if (!("data" in previousState)) process.exit(1);
     if (!("content" in previousState.data)) process.exit(1);
