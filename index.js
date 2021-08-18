@@ -69,17 +69,17 @@ async function newStat(timestamp, data, previousStatSha = null) {
         previousUpdateInfo = await getPreviousUpdateInfo();
     } catch (e) {
         console.warn(e);
-        previousUpdateInfo = {data: {sha: null}};
+        return;
     }
     if (
         !("data" in previousUpdateInfo) ||
         !("sha" in previousUpdateInfo.data)
     ) return;
     const previousUpdateInfoSha = previousUpdateInfo.data.sha;
-    return await Promise.all([
-        uploadUpdateInfo({timestamp}, previousUpdateInfoSha),
-        uploadStat(timestamp, data, previousStatSha)
-    ]);
+    return [
+        await uploadUpdateInfo({timestamp}, previousUpdateInfoSha),
+        await uploadStat(timestamp, data, previousStatSha)
+    ];
 }
 
 function uploadUpdateInfo(info, previousSha = null) {
@@ -118,7 +118,7 @@ async function main() {
         previousStat = await getPreviousStat();
     } catch (e) {
         console.warn(e);
-        previousStat = {data: {sha: null}};
+        return;
     }
     if (
         !("data" in previousStat) ||
