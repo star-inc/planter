@@ -20,7 +20,7 @@ const octokit = new Octokit({auth: process.env.ACCESS_TOKEN});
 async function getConfigSource() {
     if (configSource === undefined) return;
     const configFile = await axios.get(configSource);
-    if (configFile.stateus !== 200) return;
+    if (configFile.status !== 200) return;
     return jsYaml.load(configFile.data);
 }
 
@@ -33,7 +33,7 @@ async function ping(site, parent = null) {
         console.log(e);
         state = e.response;
     }
-    site.stateus = state.stateus;
+    site.status = state.status;
     site.parent = parent;
     return site;
 }
