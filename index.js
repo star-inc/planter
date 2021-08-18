@@ -71,7 +71,8 @@ async function newState(timestamp, data, previousStateSha = null) {
         console.warn(e);
         previousUpdateInfo = {data: {sha: null}};
     }
-    if (!("data" in previousUpdateInfo) || !("sha" in previousUpdateInfo.data)) return;
+    if (!("data" in previousUpdateInfo)) return;
+    if (!("content" in previousUpdateInfo.data)) return;
     const previousUpdateInfoSha = previousUpdateInfo.data.sha;
     return [
         await uploadUpdateInfo({timestamp}, previousUpdateInfoSha),
@@ -109,7 +110,6 @@ async function main() {
     const timestamp = new Date().getTime();
     const result = await pingSites(config);
     const data = JSON.stringify(result);
-    const localHash = sha256(data);
     let previousState;
     try {
         previousState = await getPreviousState();
@@ -117,7 +117,12 @@ async function main() {
         console.warn(e);
         previousState = {data: {sha: null}};
     }
-    if (!("data" in previousState) || !("sha" in previousState.data) || previousState.data.sha === localHash) return;
+    if (!("data" in previousState)) return;
+    if (!("content" in previousState.data)) return;
+    const localHash = sha256(`${encode(data)}\n`);
+    const remoteHash = sha256(previousState.data.content);
+    if (localHash === remoteHash) return;
+    if (!("sha" in previousState.data)) return;
     const previousSha = previousState.data.sha;
     try {
         const result = await newState(timestamp, data, previousSha);
