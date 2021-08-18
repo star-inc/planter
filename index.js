@@ -119,6 +119,11 @@ function uploadState(timestamp, data, previousSha = null) {
     return octokit.request(route, options);
 }
 
+function requestWebhooks(config, payload) {
+    if (!("webhooks" in config)) return;
+    return Promise.all(config.webhooks.map(webhook => axios.post(webhook, payload)))
+}
+
 async function main() {
     const config = await getConfigSource();
     if (!(config instanceof Object)) process.exit(1);
@@ -144,6 +149,7 @@ async function main() {
     } catch (e) {
         console.error(e);
     }
+    await requestWebhooks(config, result)
 }
 
 main();
