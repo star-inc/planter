@@ -3,6 +3,9 @@ const jsYaml = require('js-yaml');
 const {Octokit} = require("@octokit/core");
 const {sha256} = require('js-sha256');
 const {encode} = require('js-base64');
+const jwt = require('jsonwebtoken');
+
+const timestamp = new Date().getTime();
 
 const configSource = process.env.CONFIG_SOURCE_URL;
 const incidentsOwner = process.env.INCIDENT_OWNER;
@@ -15,7 +18,20 @@ pingOperator.interceptors.response.use(function (response) {
     return Promise.reject(error);
 });
 
-const octokit = new Octokit({auth: process.env.ACCESS_TOKEN});
+let auth;
+if (process.env.ACCESS_TYPE === "github_app") {
+    // GitHub App JWT Token
+    const privateKey = process.env.ACCESS_TOKEN;
+    auth = jwt.sign({
+        iat: timestamp,
+        exp: timestamp + (10 * 60),
+        iss: process.env.ACCESS_APP_ID
+    }, privateKey, {algorithm: 'RS256'});
+} else {
+    // Personal Token
+    auth = process.env.ACCESS_TOKEN;
+}
+const octokit = new Octokit({auth});
 
 async function getConfigSource() {
     if (configSource === undefined) return;
@@ -107,7 +123,6 @@ function uploadState(timestamp, data, previousSha = null) {
 async function main() {
     const config = await getConfigSource();
     if (!(config instanceof Object)) return;
-    const timestamp = new Date().getTime();
     const result = await pingSites(config);
     const data = JSON.stringify(result);
     let previousState;

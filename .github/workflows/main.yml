@@ -18,6 +18,8 @@ jobs:
           npm install
           node index.js
         env:
+          ACCESS_TYPE: ${{ secrets.ACCESS_TYPE }}
+          ACCESS_APP_ID: ${{ secrets.ACCESS_APP_ID }}
           ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
           CONFIG_SOURCE_URL: ${{ secrets.CONFIG_SOURCE_URL }}
           INCIDENT_OWNER: ${{ secrets.INCIDENT_OWNER }}
