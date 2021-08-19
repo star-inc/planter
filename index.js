@@ -49,7 +49,7 @@ async function ping(site) {
         state = e.response;
     }
     site.status = state.status;
-    if (state.data.startsWith("\xef")) {
+    if (typeof state.data === "string" && state.data.startsWith("\xef")) {
         site.metadata = state.data;
     }
     if (("children" in site)) {
