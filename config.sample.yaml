@@ -1,7 +1,7 @@
-sites:
+servers:
   - name: Main Server
     description: This is a server.
-    children:
+    services:
       - name: Service 1
         description: This is a demo for p.mume.
         endpoint: "https://example.com"
@@ -10,11 +10,12 @@ sites:
         endpoint: "https://example.com"
       - name: Service 3
         description: This is a demo for p.mume.
+        website: "https://example.com"
         endpoint: "https://example.com"
   - name: Second Server
     description: This is a server, too.
     endpoint: "https://example.com"
-    children:
+    services:
       - name: Service
         description: This is a demo for p.mume.
         endpoint: "https://example.com"
