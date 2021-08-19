@@ -4,7 +4,7 @@
 
 All static status page system.
 
-![ICON](src/assets/logo.svg)
+![ICON](logo.svg)
 
 ## License
 

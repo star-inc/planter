@@ -8,9 +8,9 @@
       <v-app-bar app extended fixed flat>
         <v-app-bar-title>
           <v-img
+              :src="toolbarLogoUrl"
               alt="Logo"
               class="mr-1"
-              src="@/assets/icon.png"
               width="39px"
           />
         </v-app-bar-title>
@@ -79,8 +79,13 @@ export default {
     status: false,
   }),
   computed: {
+    toolbarLogoUrl() {
+      const logoUrl = process.env.VUE_APP_LOGO_URL;
+      return logoUrl || "default.png";
+    },
     toolbarTitle() {
-      return "p.<strong>mume</strong>"
+      const appTitle = process.env.VUE_APP_TITLE;
+      return appTitle || "p.<strong>mume</strong>";
     }
   },
   methods: {

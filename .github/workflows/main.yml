@@ -16,9 +16,15 @@ jobs:
         uses: actions/checkout@v2.3.1
       - name: Install and Build
         run: |
-          sh deploy.sh
+          npm install
+          npm run build
         env:
-          CONFIG_SOURCE_URL: ${{ secrets.CONFIG_SOURCE_URL }}
+          VUE_APP_TITLE: ${{ secrets.VUE_APP_TITLE }}
+          VUE_APP_LOGO_URL: ${{ secrets.VUE_APP_LOGO_URL }}
+          VUE_APP_UPDATE_JSON_URL: ${{ secrets.VUE_APP_UPDATE_JSON_URL }}
+          VUE_APP_STATE_JSON_URL: ${{ secrets.VUE_APP_STATE_JSON_URL }}
+          VUE_APP_I18N_LOCALE: ${{ secrets.VUE_APP_I18N_LOCALE }}
+          VUE_APP_I18N_FALLBACK_LOCALE: ${{ secrets.VUE_APP_I18N_FALLBACK_LOCALE }}
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@4.1.4
         with:
