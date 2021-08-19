@@ -1,3 +1,9 @@
 {
-  "message": "hello i18n !!"
+  "nav": {
+    "index": "Dashboard",
+    "incidents": "Incidents",
+    "metrics": "Metrics",
+    "subscribe": "Subscribe",
+    "about": "About"
+  }
 }

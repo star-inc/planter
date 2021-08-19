@@ -1,4 +1,13 @@
 module.exports = {
+    pages: {
+        index: {
+            title: process.env.VUE_APP_TITLE,
+            entry: 'src/main.js',
+            template: 'public/index.html',
+            filename: 'index.html',
+        }
+    },
+
     transpileDependencies: [
         'vuetify'
     ],
