@@ -6,22 +6,22 @@ import About from '../views/About.vue'
 Vue.use(VueRouter)
 
 const routes = [
-  {
-    path: '/',
-    name: 'Index',
-    component: Index
-  },
-  {
-    path: '/about',
-    name: 'About',
-    component: About
-  }
+    {
+        path: '/',
+        name: 'Index',
+        component: Index
+    },
+    {
+        path: '/about',
+        name: 'About',
+        component: About
+    }
 ]
 
 const router = new VueRouter({
-  mode: 'history',
-  base: process.env.BASE_URL,
-  routes
+    mode: 'history',
+    base: process.env.BASE_URL,
+    routes
 })
 
 export default router

@@ -5,13 +5,13 @@
         :width="$store.state.screenSize.width"
         class="mx-auto overflow-hidden"
     >
-      <v-app-bar app fixed flat extended>
+      <v-app-bar app extended fixed flat>
         <v-app-bar-title>
           <v-img
+              alt="Logo"
+              class="mr-1"
               src="@/assets/icon.png"
               width="39px"
-              class="mr-1"
-              alt="Logo"
           />
         </v-app-bar-title>
         <v-toolbar-title v-html="toolbarTitle"/>
@@ -22,9 +22,9 @@
       </v-app-bar>
       <v-navigation-drawer
           v-model="drawer"
-          temporary
           absolute
           right
+          temporary
       >
         <v-list nav>
           <v-list-item href="https://github.com/star-inc/p.mume">
@@ -47,13 +47,16 @@
           <v-list-item link to="/metrics">
             <v-list-item-title>{{ $t("nav.metrics") }}</v-list-item-title>
           </v-list-item>
+          <v-list-item link to="/subscribe">
+            <v-list-item-title>{{ $t("nav.subscribe") }}</v-list-item-title>
+          </v-list-item>
           <v-list-item link to="/about">
             <v-list-item-title>{{ $t("nav.about") }}</v-list-item-title>
           </v-list-item>
         </v-list>
-        <template v-slot:append>
+        <template #append>
           <div class="pa-2">
-            <v-btn class="primary" block rounded>
+            <v-btn block class="primary" rounded>
               Raise Issue
             </v-btn>
           </div>
@@ -87,9 +90,6 @@ export default {
         height: window.innerHeight
       })
     },
-    downloadConfig() {
-      this.$axios.get()
-    }
   },
   async created() {
     this.resize()
