@@ -1,7 +1,7 @@
 module.exports = {
     pages: {
         index: {
-            title: process.env.VUE_APP_TITLE,
+            title: process.env.VUE_APP_TITLE.replace(/<[^>]*>?/gm, ''),
             entry: 'src/main.js',
             template: 'public/index.html',
             filename: 'index.html',
