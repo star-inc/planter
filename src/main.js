@@ -1,30 +1,20 @@
 import Vue from 'vue'
+import './plugins/axios'
 import App from './App.vue'
-import VueRouter from 'vue-router'
-
-// import VueMaterial from 'vue-material'
-import { MdApp, MdButton, MdCard, MdToolbar, MdDrawer, MdList, MdContent, MdIcon } from 'vue-material/dist/components'
-
-import 'vue-material/dist/vue-material.min.css'
-import 'vue-material/dist/theme/black-green-dark.css'
-
-import router from '@/routes.js'
-
-Vue.use(VueRouter)
-
-// Vue.use(VueMaterial)
-Vue.use(MdApp)
-Vue.use(MdButton)
-Vue.use(MdCard)
-Vue.use(MdToolbar)
-Vue.use(MdDrawer)
-Vue.use(MdList)
-Vue.use(MdContent)
-Vue.use(MdIcon)
+import vuetify from './plugins/vuetify'
+import moment from 'vue-moment';
+import store from './store'
+import router from './router'
+import i18n from './i18n'
 
 Vue.config.productionTip = false
 
+Vue.use(moment)
+
 new Vue({
+    vuetify,
+    store,
     router,
-    render: h => h(App),
+    i18n,
+    render: h => h(App)
 }).$mount('#app')

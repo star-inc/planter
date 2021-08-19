@@ -4,10 +4,38 @@
 
 All static status page system.
 
-![ICON](src/assets/logo.svg)
+![ICON](logo.svg)
 
 ## License
 
 Licensed under [BSD 3-Clause "New" or "Revised" License](LICENSE).
 
-> (c) 2020 [Star Inc](https://starinc.xyz).
+## Project setup
+
+```
+npm install
+```
+
+### Compiles and hot-reloads for development
+
+```
+npm run serve
+```
+
+### Compiles and minifies for production
+
+```
+npm run build
+```
+
+### Lints and fixes files
+
+```
+npm run lint
+```
+
+### Customize configuration
+
+Come soon...
+
+> (c) 2021 [Star Inc](https://starinc.xyz).

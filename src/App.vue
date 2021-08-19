@@ -1,105 +1,107 @@
 <template>
-  <div class="page-container">
-    <md-app md-waterfall md-mode="overlap">
-      <md-app-toolbar class="md-primary md-large">
-        <div class="md-toolbar-row">
-          <md-button class="md-icon-button" @click="menuVisible = !menuVisible">
-            <md-icon>menu</md-icon>
-          </md-button>
-
-          <span class="md-title">
-            <img class="logo" alt="p.mume" src="@/assets/logo.svg" />
-          </span>
+  <v-app dark>
+    <v-card
+        :height="$store.state.screenSize.height"
+        :width="$store.state.screenSize.width"
+        class="mx-auto overflow-hidden"
+    >
+      <v-app-bar app extended fixed flat>
+        <v-app-bar-title>
+          <v-img
+              :src="toolbarLogoUrl"
+              alt="Logo"
+              class="mr-1"
+              width="39px"
+          />
+        </v-app-bar-title>
+        <v-toolbar-title v-html="toolbarTitle"/>
+        <v-spacer/>
+        <v-app-bar-nav-icon
+            @click.stop="drawer = !drawer"
+        />
+      </v-app-bar>
+      <v-navigation-drawer
+          v-model="drawer"
+          absolute
+          right
+          temporary
+      >
+        <v-list nav>
+          <v-list-item href="https://github.com/star-inc/p.mume">
+            <v-list-item-content>
+              <v-list-item-title class="text-h6">
+                p.mume
+              </v-list-item-title>
+              <v-list-item-subtitle>
+                version: 2.0-beta
+              </v-list-item-subtitle>
+            </v-list-item-content>
+          </v-list-item>
+          <v-divider/>
+          <v-list-item link to="/">
+            <v-list-item-title>{{ $t("nav.index") }}</v-list-item-title>
+          </v-list-item>
+          <v-list-item link to="/incidents">
+            <v-list-item-title>{{ $t("nav.incidents") }}</v-list-item-title>
+          </v-list-item>
+          <v-list-item link to="/metrics">
+            <v-list-item-title>{{ $t("nav.metrics") }}</v-list-item-title>
+          </v-list-item>
+          <v-list-item link to="/subscribe">
+            <v-list-item-title>{{ $t("nav.subscribe") }}</v-list-item-title>
+          </v-list-item>
+          <v-list-item link to="/about">
+            <v-list-item-title>{{ $t("nav.about") }}</v-list-item-title>
+          </v-list-item>
+        </v-list>
+        <template #append>
+          <div class="pa-2">
+            <v-btn block class="primary" rounded>
+              Raise Issue
+            </v-btn>
+          </div>
+        </template>
+      </v-navigation-drawer>
+      <v-main>
+        <div>
+          <router-view/>
         </div>
-      </md-app-toolbar>
-
-      <md-app-drawer :md-active.sync="menuVisible">
-        <md-toolbar class="md-transparent" md-elevation="0">
-          <img class="logo" alt="p.mume" src="@/assets/logo.svg" />
-        </md-toolbar>
-
-        <md-list>
-          <md-list-item @click="home">
-            <md-icon>home</md-icon>
-            <span class="md-list-item-text">Home</span>
-          </md-list-item>
-
-          <md-list-item @click="incidents">
-            <md-icon>book</md-icon>
-            <span class="md-list-item-text">Incidents</span>
-          </md-list-item>
-
-          <md-list-item @click="subscribe">
-            <md-icon>send</md-icon>
-            <span class="md-list-item-text">Subscribe</span>
-          </md-list-item>
-
-          <md-list-item @click="star">
-            <md-icon>star</md-icon>
-            <span class="md-list-item-text">Star Inc.</span>
-          </md-list-item>
-
-          <md-list-item @click="about">
-            <md-icon>info</md-icon>
-            <span class="md-list-item-text">About</span>
-          </md-list-item>
-        </md-list>
-      </md-app-drawer>
-
-      <md-app-content>
-       <router-view />
-      </md-app-content>
-    </md-app>
-  </div>
+      </v-main>
+    </v-card>
+  </v-app>
 </template>
 
 <script>
 export default {
-  name: "Application",
+  name: 'App',
+  data: () => ({
+    drawer: false,
+    status: false,
+  }),
+  computed: {
+    toolbarLogoUrl() {
+      const logoUrl = process.env.VUE_APP_LOGO_URL;
+      return logoUrl || "default.png";
+    },
+    toolbarTitle() {
+      const appTitle = process.env.VUE_APP_TITLE;
+      return appTitle || "p.<strong>mume</strong>";
+    }
+  },
   methods: {
-    _routerMove(targetName){
-      if (targetName != this.$route.name) {
-        this.$router.push({ name: targetName });
-      }
-      this.menuVisible = false;
-    },
-    home() {
-      this._routerMove("Status");
-    },
-    incidents() {
-      this._routerMove("Incidents");
-    },
-    subscribe() {
-      this._routerMove("Subscribe");
-    },
-    star: () => (location.href = "https://starinc.xyz"),
-    about() {
-      this._routerMove("About");
+    resize() {
+      this.$store.commit('updateScreenSize', {
+        width: window.innerWidth,
+        height: window.innerHeight
+      })
     },
   },
-  data: () => ({
-    menuVisible: false,
-  }),
-};
+  async created() {
+    this.resize()
+    window.addEventListener("resize", this.resize)
+  },
+  destroyed() {
+    window.removeEventListener("resize", this.resize)
+  }
+}
 </script>
-
-<style lang="scss" scoped>
-.md-app {
-  width: 100%;
-  height: 100vh;
-}
-
-.md-toolbar {
-  background: #fff;
-}
-
-.md-drawer {
-  width: 250px;
-}
-
-.logo {
-  width: auto;
-  height: 100px;
-  padding: 15px;
-}
-</style>
