@@ -18,7 +18,7 @@
         </v-list-item-content>
       </template>
       <v-icon slot="prependIcon" :color="iconColor">
-        mdi-school
+        {{ icon }}
       </v-icon>
       <site-bar
           v-for="i in children"
@@ -27,11 +27,14 @@
           :metadata="i.metadata"
           :name="i.name"
           :status="i.status"
+          :website="i.website"
       />
     </v-list-group>
     <v-list-item v-else :class="className">
       <v-list-item-icon>
-        <v-icon :color="iconColor">mdi-school</v-icon>
+        <v-icon :color="iconColor">
+          {{ icon }}
+        </v-icon>
       </v-list-item-icon>
       <v-list-item-content>
         <v-list-item-title>
@@ -87,6 +90,17 @@ export default {
         }
         default: {
           return "red";
+        }
+      }
+    },
+    icon() {
+      switch (this.status) {
+        case 200:
+        case 204: {
+          return "mdi-check-circle-outline";
+        }
+        default: {
+          return "mdi-alert-circle-outline";
         }
       }
     },

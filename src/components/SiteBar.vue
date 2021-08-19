@@ -1,7 +1,9 @@
 <template>
-  <v-list-item :class="className">
+  <v-list-item :class="className" :href="website">
     <v-list-item-icon>
-      <v-icon :color="iconColor">mdi-school</v-icon>
+      <v-icon :color="iconColor">
+        {{ icon }}
+      </v-icon>
     </v-list-item-icon>
     <v-list-item-content>
       <v-list-item-title>
@@ -34,9 +36,25 @@ export default {
       type: String,
       required: false,
       default: () => ""
+    },
+    website: {
+      type: String,
+      required: false,
+      default: () => ""
     }
   },
   computed: {
+    icon() {
+      switch (this.status) {
+        case 200:
+        case 204: {
+          return "mdi-check-circle-outline";
+        }
+        default: {
+          return "mdi-alert-circle-outline";
+        }
+      }
+    },
     iconColor() {
       switch (this.status) {
         case 200:
