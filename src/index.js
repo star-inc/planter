@@ -2,17 +2,24 @@ const axios = require('axios');
 const jsYaml = require('js-yaml');
 const github = require("./provider/incidents/github");
 
+const ping = require("./ping");
+const {request} = require("./webhook");
+
+const providers = {github}
+const providerValue = process.env.INCIDENTS_STORAGE_PROVIDER;
+
 async function main() {
-    const incidentsStorageProvider = process.env.INCIDENTS_STORAGE_PROVIDER;
     const timestamp = new Date().getTime();
-    const incidentsStorageProviders = {github}
     const config = await getConfigSource();
     if (!(config instanceof Object)) process.exit(1);
-    const result = await pingSites(config);
+    const result = await ping(config);
     const data = JSON.stringify(result);
-    const incidentsStorage = new incidentsStorageProviders[incidentsStorageProvider](config);
+    const storage = new providers[providerValue](config, timestamp);
     try {
-        await requestWebhooks(config, result)
+        await Promise.all([
+            request(config, result),
+            storage.issue(data)
+        ])
     } catch (e) {
         console.error(e);
         process.exit(1);
@@ -27,4 +34,4 @@ async function getConfigSource() {
     return jsYaml.load(configFile.data);
 }
 
-main();
+export default main;
