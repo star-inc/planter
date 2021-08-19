@@ -1,28 +1,21 @@
 <template>
-  <v-card
-      :height="$store.state.screenSize.height - 105"
-      :width="$store.state.screenSize.width"
-      class="mx-auto overflow-y-auto"
-      flat
-  >
-    <v-container>
-      <server-bar
-          v-for="(i, k) in state"
-          :key="k"
-          :children="i.children"
-          :description="i.description"
-          :metadata="i.metadata"
-          :name="i.name"
-          :status="i.status"
-      />
-      <v-card flat>
-        <v-card-text>
-          Last incident occurred:
-          {{ info.timestamp | moment("from") }}
-        </v-card-text>
-      </v-card>
-    </v-container>
-  </v-card>
+  <v-container>
+    <server-bar
+        v-for="(i, k) in state"
+        :key="k"
+        :children="i.children"
+        :description="i.description"
+        :metadata="i.metadata"
+        :name="i.name"
+        :status="i.status"
+    />
+    <v-card flat>
+      <v-card-text>
+        Last incident occurred:
+        {{ info.timestamp | moment("from") }}
+      </v-card-text>
+    </v-card>
+  </v-container>
 </template>
 
 <script>

@@ -57,15 +57,20 @@
         <template #append>
           <div class="pa-2">
             <v-btn block class="primary" rounded>
-              Raise Issue
+              {{ $t("nav.raise") }}
             </v-btn>
           </div>
         </template>
       </v-navigation-drawer>
       <v-main>
-        <div>
+        <v-card
+            :height="$store.state.screenSize.height - 105"
+            :width="$store.state.screenSize.width"
+            class="mx-auto overflow-y-auto"
+            flat
+        >
           <router-view/>
-        </div>
+        </v-card>
       </v-main>
     </v-card>
   </v-app>
