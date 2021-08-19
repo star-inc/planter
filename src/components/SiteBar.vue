@@ -1,5 +1,10 @@
 <template>
-  <v-list-item :class="className" :href="website">
+  <v-list-item
+      :class="className"
+      :href="website"
+      target="_blank"
+      rel="noreferrer noopener"
+  >
     <v-list-item-icon>
       <v-icon :color="iconColor">
         {{ icon }}
