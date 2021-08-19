@@ -39,7 +39,7 @@ async function getConfigSource() {
     return jsYaml.load(configFile.data);
 }
 
-async function ping(site, parent = null) {
+async function ping(site) {
     if (!("endpoint" in site)) return;
     let state;
     try {
@@ -49,24 +49,19 @@ async function ping(site, parent = null) {
         state = e.response;
     }
     site.status = state.status;
-    site.parent = parent;
     if (state.data.startsWith("\xef")) {
         site.metadata = state.data;
+    }
+    if (("children" in site)) {
+        site.children = (await Promise.all(site.children.map(ping))).filter(item => !!item)
     }
     return site;
 }
 
 async function pingSites(config) {
     if (!("sites" in config)) return;
-    const sitePromises = config.sites.map((site) => ping(site));
-    const childrenPromises = config.sites.map((site) => {
-        if (!("children" in site)) return;
-        return Promise.all(site.children.map((child) => ping(child, site.name)));
-    });
-    return await Promise.all([
-        ...sitePromises.filter(promise => !!promise),
-        ...childrenPromises.filter(promise => !!promise)
-    ]);
+    const sitePromises = config.sites.map(ping);
+    return (await Promise.all(sitePromises)).filter(item => !!item);
 }
 
 function getPreviousUpdateInfo() {
