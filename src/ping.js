@@ -30,7 +30,7 @@ async function _pingServer(server) {
     }
     if (("services" in server)) {
         const servicePromises = server.services.map(_pingService);
-        server.services = extractPromises(servicePromises)
+        server.services = await extractPromises(servicePromises)
     }
     return server;
 }
