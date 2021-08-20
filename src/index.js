@@ -1,3 +1,6 @@
+// p.mume planter
+// License: BSD 3-Clause License
+// (c) 2021 Star Inc.
 const axios = require('axios');
 const jsYaml = require('js-yaml');
 const github = require("./provider/incidents/github");
@@ -10,6 +13,10 @@ const {request} = require("./webhook");
 const providers = {github}
 const providerValue = process.env.INCIDENTS_STORAGE_PROVIDER;
 
+/**
+ *
+ * @returns {Promise<void>}
+ */
 async function main() {
     const timestamp = new Date().getTime();
     const config = await getConfigSource();
@@ -28,6 +35,10 @@ async function main() {
     }
 }
 
+/**
+ *
+ * @returns {Promise<*>}
+ */
 async function getConfigSource() {
     const configSource = process.env.CONFIG_SOURCE_URL;
     if (configSource === undefined) return;

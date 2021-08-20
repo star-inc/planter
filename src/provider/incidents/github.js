@@ -1,3 +1,6 @@
+// p.mume planter
+// License: BSD 3-Clause License
+// (c) 2021 Star Inc.
 const {encode} = require("js-base64");
 const {Octokit} = require("@octokit/core");
 const {createAppAuth} = require("@octokit/auth-app");
@@ -7,8 +10,13 @@ const ProviderInterface = require("./interface");
 const {hashCompare} = require("../../utils");
 
 module.exports = class extends ProviderInterface {
+    /**
+     *
+     * @param _
+     * @param timestamp
+     */
     constructor(_, timestamp) {
-        super();
+        super(_, timestamp);
         this.timestamp = timestamp;
         this.owner = process.env.INCIDENT_OWNER;
         this.repository = process.env.INCIDENT_REPOSITORY;
@@ -26,6 +34,11 @@ module.exports = class extends ProviderInterface {
         }
     }
 
+    /**
+     *
+     * @param data
+     * @returns {Promise<(*|*)[]>}
+     */
     async issue(data) {
         const b64Data = encode(data);
         const previousState = await this._fetchPreviousState();
@@ -37,6 +50,11 @@ module.exports = class extends ProviderInterface {
         ];
     }
 
+    /**
+     *
+     * @returns {Promise<{sha: null}>}
+     * @private
+     */
     async _fetchPreviousUpdateInfo() {
         let updateInfo;
         try {
@@ -50,6 +68,11 @@ module.exports = class extends ProviderInterface {
         return updateInfo.data;
     }
 
+    /**
+     *
+     * @returns {Promise<{sha: null, content: string}>}
+     * @private
+     */
     async _fetchPreviousState() {
         let state;
         try {
@@ -65,18 +88,35 @@ module.exports = class extends ProviderInterface {
         return state.data;
     }
 
+    /**
+     *
+     * @returns {Promise<OctokitResponse<any>>}
+     * @private
+     */
     _getPreviousUpdateInfo() {
         const route = `GET /repos/{owner}/{repo}/contents/update.json`;
         const options = {owner: this.owner, repo: this.repository};
         return this.octokit.request(route, options);
     }
 
+    /**
+     *
+     * @returns {Promise<OctokitResponse<any>>}
+     * @private
+     */
     _getPreviousState() {
         const route = `GET /repos/{owner}/{repo}/contents/state.json`;
         const options = {owner: this.owner, repo: this.repository};
         return this.octokit.request(route, options);
     }
 
+    /**
+     *
+     * @param timestamp
+     * @param previousSha
+     * @returns {Promise<OctokitResponse<any>>}
+     * @private
+     */
     _uploadUpdateInfo(timestamp, previousSha) {
         const route = `PUT /repos/{owner}/{repo}/contents/update.json`;
         const options = {
@@ -89,6 +129,14 @@ module.exports = class extends ProviderInterface {
         return this.octokit.request(route, options);
     }
 
+    /**
+     *
+     * @param timestamp
+     * @param previousSha
+     * @param b64Data
+     * @returns {Promise<OctokitResponse<any>>}
+     * @private
+     */
     _uploadState(timestamp, previousSha, b64Data) {
         const route = `PUT /repos/{owner}/{repo}/contents/state.json`;
         const options = {
