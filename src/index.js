@@ -2,6 +2,8 @@ const axios = require('axios');
 const jsYaml = require('js-yaml');
 const github = require("./provider/incidents/github");
 
+const incidentsProviderInterface = require("./provider/incidents/interface");
+
 const ping = require("./ping");
 const {request} = require("./webhook");
 
@@ -15,6 +17,7 @@ async function main() {
     const result = await ping(config);
     const data = JSON.stringify(result);
     const storage = new providers[providerValue](config, timestamp);
+    if (!(storage instanceof incidentsProviderInterface)) process.exit(1);
     try {
         await Promise.all([
             request(config, result),

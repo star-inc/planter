@@ -1,13 +1,15 @@
-import providerInterface from "./interface";
-import {Octokit} from "@octokit/core";
-import {createAppAuth} from "@octokit/auth-app";
-import {sha256} from "js-sha256";
+const {Octokit} = require("@octokit/core");
+const {createAppAuth} = require("@octokit/auth-app");
+
+const providerInterface = require("./interface");
+const {hashCompare} = require("../../utils");
 
 const {encode} = require("js-base64");
 
 export default class extends providerInterface {
-    constructor() {
+    constructor(_, timestamp) {
         super();
+        this.timestamp = timestamp;
         this.owner = process.env.INCIDENT_OWNER;
         this.repository = process.env.INCIDENT_REPOSITORY;
         if (process.env.ACCESS_TYPE === "github_app") {
@@ -25,37 +27,41 @@ export default class extends providerInterface {
     }
 
     async issue(data) {
-        let previousState;
-        try {
-            previousState = await this._getPreviousState();
-        } catch (e) {
-            console.warn(e);
-            previousState = {data: {sha: null, content: ""}};
-        }
-        if (!("data" in previousState)) process.exit(1);
-        if (!("content" in previousState.data)) process.exit(1);
-        const localHash = sha256(encode(data));
-        const remoteHash = sha256(previousState.data.content.replace(/\n/g, ""));
-        if (localHash === remoteHash) return;
-        if (!("sha" in previousState.data)) process.exit(1);
-        const previousSha = previousState.data.sha;
+        const previousState = this._fetchPreviousState()
+        if (!hashCompare(data, previousState.content)) return;
+        const previousUpdateInfo = this._fetchPreviousUpdateInfo()
+        return [
+            await this._uploadState(this.timestamp, previousState.sha, data),
+            await this._uploadUpdateInfo(this.timestamp, previousUpdateInfo.sha)
+        ];
     }
 
-    async newState(timestamp, data, previousStateSha = null) {
-        let previousUpdateInfo;
+    async _fetchPreviousUpdateInfo() {
+        let updateInfo;
         try {
-            previousUpdateInfo = await this._getPreviousUpdateInfo();
+            updateInfo = await this._getPreviousUpdateInfo();
         } catch (e) {
             console.warn(e);
-            previousUpdateInfo = {data: {sha: null}};
+            updateInfo = {data: {sha: null}};
         }
-        if (!("data" in previousUpdateInfo)) process.exit(1);
-        if (!("sha" in previousUpdateInfo.data)) process.exit(1);
-        const previousUpdateInfoSha = previousUpdateInfo.data.sha;
-        return [
-            await this._uploadUpdateInfo({timestamp}, previousUpdateInfoSha),
-            await this._uploadState(timestamp, data, previousStateSha)
-        ];
+        if (!("data" in updateInfo)) process.exit(1);
+        if (!("sha" in updateInfo.data)) process.exit(1);
+        return updateInfo.data;
+    }
+
+    async _fetchPreviousState() {
+        let state;
+        try {
+            state = await this._getPreviousState();
+        } catch (e) {
+            console.warn(e);
+            state = {data: {sha: null, content: ""}};
+        }
+        if (!("data" in state)) process.exit(1);
+        if (!("sha" in state.data)) process.exit(1);
+        if (!("content" in state.data)) process.exit(1);
+        state.data.content = state.data.content.replace(/\n/g, "")
+        return state.data;
     }
 
     _getPreviousUpdateInfo() {
@@ -70,19 +76,19 @@ export default class extends providerInterface {
         return this.octokit.request(route, options);
     }
 
-    _uploadUpdateInfo(info, previousSha = null) {
+    _uploadUpdateInfo(timestamp, previousSha) {
         const route = `PUT /repos/{owner}/{repo}/contents/update.json`;
         const options = {
             owner: this.owner,
             repo: this.repository,
-            content: encode(JSON.stringify(info)),
+            content: encode(JSON.stringify({timestamp})),
             sha: previousSha,
-            message: `UpdateInfo #${info.timestamp}`,
+            message: `UpdateInfo #${timestamp}`,
         };
         return this.octokit.request(route, options);
     }
 
-    _uploadState(timestamp, data, previousSha = null) {
+    _uploadState(timestamp, previousSha, data) {
         const route = `PUT /repos/{owner}/{repo}/contents/state.json`;
         const options = {
             owner: this.owner,
