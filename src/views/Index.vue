@@ -3,7 +3,7 @@
     <server-bar
         v-for="(i, k) in state"
         :key="k"
-        :children="i.children"
+        :services="i.services"
         :description="i.description"
         :metadata="i.metadata"
         :name="i.name"

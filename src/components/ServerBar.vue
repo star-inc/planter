@@ -1,8 +1,8 @@
 <template>
   <div>
     <v-list-group
-        v-if="children.length"
-        v-model="showChildren"
+        v-if="services.length"
+        v-model="showServices"
         :class="className"
         :color="color"
         no-action
@@ -20,8 +20,8 @@
       <v-icon slot="prependIcon" :color="iconColor">
         {{ icon }}
       </v-icon>
-      <site-bar
-          v-for="i in children"
+      <service-bar
+          v-for="i in services"
           :key="i.name"
           :description="i.description"
           :metadata="i.metadata"
@@ -49,11 +49,11 @@
 </template>
 
 <script>
-import SiteBar from "./SiteBar";
+import ServiceBar from "./ServiceBar";
 
 export default {
   name: "ServerBar",
-  components: {SiteBar},
+  components: {ServiceBar},
   props: {
     name: {
       type: String,
@@ -72,14 +72,14 @@ export default {
       required: false,
       default: () => ""
     },
-    children: {
+    services: {
       type: Array,
       required: false,
       default: () => []
     }
   },
   data: () => ({
-    showChildren: false,
+    showServices: false,
   }),
   computed: {
     color() {
@@ -111,7 +111,7 @@ export default {
           return "";
         }
         default: {
-          return !this.showChildren
+          return !this.showServices
               ? "white"
               : "red";
         }
@@ -124,7 +124,7 @@ export default {
           return "";
         }
         default: {
-          return !this.showChildren
+          return !this.showServices
               ? "red white--text"
               : "";
         }
