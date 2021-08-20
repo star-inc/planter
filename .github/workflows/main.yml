@@ -16,7 +16,7 @@ jobs:
       - name: Start 💫
         run: |
           npm install
-          node index.js
+          npm run plant
         env:
           ACCESS_TYPE: ${{ secrets.ACCESS_TYPE }}
           ACCESS_APP_ID: ${{ secrets.ACCESS_APP_ID }}

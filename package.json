@@ -1,9 +1,10 @@
 {
   "name": "planter",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "All static status page system.",
+  "main": "app.js",
   "scripts": {
+    "plant": "node app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -20,6 +21,7 @@
     "@octokit/auth-app": "^3.6.0",
     "@octokit/core": "^3.5.1",
     "axios": "^0.21.1",
+    "dotenv": "^10.0.0",
     "js-base64": "^3.6.1",
     "js-sha256": "^0.9.0",
     "js-yaml": "^4.1.0"
