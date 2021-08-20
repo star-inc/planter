@@ -23,7 +23,7 @@ async function _ping(endpoint) {
 
 async function _pingServer(server) {
     if (!("endpoint" in server)) return;
-    const state = _ping(server.endpoint);
+    const state = await _ping(server.endpoint);
     server.status = state.status;
     if (typeof state.data === "string" && state.data.startsWith("\xef")) {
         server.metadata = state.data;
