@@ -1,12 +1,12 @@
+const {encode} = require("js-base64");
 const {Octokit} = require("@octokit/core");
 const {createAppAuth} = require("@octokit/auth-app");
 
-const providerInterface = require("./interface");
+const ProviderInterface = require("./interface");
+
 const {hashCompare} = require("../../utils");
 
-const {encode} = require("js-base64");
-
-module.exports = class extends providerInterface {
+module.exports = class extends ProviderInterface {
     constructor(_, timestamp) {
         super();
         this.timestamp = timestamp;
@@ -28,9 +28,9 @@ module.exports = class extends providerInterface {
 
     async issue(data) {
         const b64Data = encode(data);
-        const previousState = this._fetchPreviousState();
+        const previousState = await this._fetchPreviousState();
         if (!hashCompare(b64Data, previousState.content)) return;
-        const previousUpdateInfo = this._fetchPreviousUpdateInfo();
+        const previousUpdateInfo = await this._fetchPreviousUpdateInfo();
         return [
             await this._uploadState(this.timestamp, previousState.sha, b64Data),
             await this._uploadUpdateInfo(this.timestamp, previousUpdateInfo.sha)
@@ -61,7 +61,7 @@ module.exports = class extends providerInterface {
         if (!("data" in state)) process.exit(1);
         if (!("sha" in state.data)) process.exit(1);
         if (!("content" in state.data)) process.exit(1);
-        state.data.content = state.data.content.replace(/\n/g, "")
+        state.data.content = state.data.content.replace(/\n/g, "");
         return state.data;
     }
 
