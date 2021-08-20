@@ -27,11 +27,12 @@ module.exports = class extends providerInterface {
     }
 
     async issue(data) {
-        const previousState = this._fetchPreviousState()
-        if (!hashCompare(data, previousState.content)) return;
-        const previousUpdateInfo = this._fetchPreviousUpdateInfo()
+        const b64Data = encode(data);
+        const previousState = this._fetchPreviousState();
+        if (!hashCompare(b64Data, previousState.content)) return;
+        const previousUpdateInfo = this._fetchPreviousUpdateInfo();
         return [
-            await this._uploadState(this.timestamp, previousState.sha, data),
+            await this._uploadState(this.timestamp, previousState.sha, b64Data),
             await this._uploadUpdateInfo(this.timestamp, previousUpdateInfo.sha)
         ];
     }
@@ -88,12 +89,12 @@ module.exports = class extends providerInterface {
         return this.octokit.request(route, options);
     }
 
-    _uploadState(timestamp, previousSha, data) {
+    _uploadState(timestamp, previousSha, b64Data) {
         const route = `PUT /repos/{owner}/{repo}/contents/state.json`;
         const options = {
             owner: this.owner,
             repo: this.repository,
-            content: encode(data),
+            content: b64Data,
             sha: previousSha,
             message: `State #${timestamp}`,
         };
