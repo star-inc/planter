@@ -18,10 +18,11 @@ jobs:
           npm install
           npm run plant
         env:
-          ACCESS_TYPE: ${{ secrets.ACCESS_TYPE }}
-          ACCESS_APP_ID: ${{ secrets.ACCESS_APP_ID }}
-          ACCESS_INSTALLATION_ID: ${{ secrets.ACCESS_INSTALLATION_ID }}
-          ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
           CONFIG_SOURCE_URL: ${{ secrets.CONFIG_SOURCE_URL }}
+          INCIDENTS_STORAGE_PROVIDER: ${{ secrets.INCIDENTS_STORAGE_PROVIDER }}
           INCIDENT_OWNER: ${{ secrets.INCIDENT_OWNER }}
           INCIDENT_REPOSITORY: ${{ secrets.INCIDENT_REPOSITORY }}
+          ACCESS_TYPE: ${{ secrets.ACCESS_TYPE }}
+          ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+          ACCESS_APP_ID: ${{ secrets.ACCESS_APP_ID }}
+          ACCESS_INSTALLATION_ID: ${{ secrets.ACCESS_INSTALLATION_ID }}
