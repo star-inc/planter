@@ -6,7 +6,7 @@ const {hashCompare} = require("../../utils");
 
 const {encode} = require("js-base64");
 
-export default class extends providerInterface {
+module.exports = class extends providerInterface {
     constructor(_, timestamp) {
         super();
         this.timestamp = timestamp;

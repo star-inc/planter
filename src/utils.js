@@ -4,4 +4,4 @@ function hashCompare(data1, data2) {
     return sha256(data1) === sha256(data2)
 }
 
-export { hashCompare }
+module.exports = {hashCompare}

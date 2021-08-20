@@ -5,4 +5,4 @@ function request(config, payload) {
     return Promise.all(config.webhooks.map(webhook => axios.post(webhook, payload)))
 }
 
-export { request }
+module.exports = {request}

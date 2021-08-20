@@ -45,4 +45,4 @@ async function _pingService(service) {
     return service;
 }
 
-export default ping;
+module.exports = ping;

@@ -8,10 +8,11 @@ All static status page system.
 
 ## What is planter
 
-Planter is an operator that helps [p.mume](https://github.com/star-inc/p.mume) to request endpoints of servers and its services,
-to fetch information and trigger the webhooks if there are any incident updates.
+Planter is an operator that helps [p.mume](https://github.com/star-inc/p.mume) to request endpoints of servers and its
+services, to fetch information and trigger the webhooks if there are any incident updates.
 
-Planter is powered by CI Providers(GitHub Action, GitLab CI, Travis CI, etc.), to execute the script on an independent environment, and collect the faults from the endpoints.
+Planter is powered by CI Providers(GitHub Action, GitLab CI, Travis CI, etc.), to execute the script on an independent
+environment, and collect the faults from the endpoints.
 
 ## Environment variables
 

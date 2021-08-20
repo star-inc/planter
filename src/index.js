@@ -37,4 +37,4 @@ async function getConfigSource() {
     return jsYaml.load(configFile.data);
 }
 
-export default main;
+module.exports = main;
