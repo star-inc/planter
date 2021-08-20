@@ -12,9 +12,9 @@ async function extractPromises(promises) {
     return (await Promise.all(promises)).filter(item => !!item)
 }
 
-async function _ping(site) {
+async function _ping(endpoint) {
     try {
-        return await operator.get(site.endpoint);
+        return await operator.get(endpoint);
     } catch (e) {
         console.log(e);
         return e.response;
