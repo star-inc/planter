@@ -37,10 +37,10 @@
         </v-icon>
       </v-list-item-icon>
       <v-list-item-content>
-        <v-list-item-title>
+        <v-list-item-title :class="className">
           {{ name }}
         </v-list-item-title>
-        <v-list-item-subtitle>
+        <v-list-item-subtitle :class="className">
           {{ description }}
         </v-list-item-subtitle>
       </v-list-item-content>
