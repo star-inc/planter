@@ -29,7 +29,7 @@ module.exports = class extends ProviderInterface {
     async issue(data) {
         const b64Data = encode(data);
         const previousState = await this._fetchPreviousState();
-        if (!hashCompare(b64Data, previousState.content)) return;
+        if (hashCompare(b64Data, previousState.content)) return;
         const previousUpdateInfo = await this._fetchPreviousUpdateInfo();
         return [
             await this._uploadState(this.timestamp, previousState.sha, b64Data),

@@ -19,10 +19,9 @@ async function main() {
     const storage = new providers[providerValue](config, timestamp);
     if (!(storage instanceof incidentsProviderInterface)) process.exit(1);
     try {
-        await Promise.all([
-            request(config, result),
-            storage.issue(data)
-        ])
+        if (await storage.issue(data)) {
+            await request(config, result)
+        }
     } catch (e) {
         console.error(e);
         process.exit(1);
