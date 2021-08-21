@@ -56,7 +56,7 @@
         </v-list>
         <template #append>
           <div class="pa-2">
-            <v-btn block class="primary" rounded>
+            <v-btn block class="primary" rounded link to="/raise">
               {{ $t("nav.raise") }}
             </v-btn>
           </div>

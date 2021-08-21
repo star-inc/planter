@@ -4,6 +4,7 @@ import Index from '../views/Index.vue'
 import Incidents from '../views/Incidents.vue'
 import Metrics from '../views/Metrics.vue'
 import Subscribe from '../views/Subscribe.vue'
+import Raise from '../views/Raise.vue'
 import About from '../views/About.vue'
 
 Vue.use(VueRouter)
@@ -28,6 +29,11 @@ const routes = [
         path: '/subscribe',
         name: 'Subscribe',
         component: Subscribe
+    },
+    {
+        path: '/raise',
+        name: 'Raise',
+        component: Raise
     },
     {
         path: '/about',

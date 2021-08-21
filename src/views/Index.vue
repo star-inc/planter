@@ -22,7 +22,7 @@
 import ServerBar from "../components/ServerBar";
 
 export default {
-  name: 'Home',
+  name: 'Index',
   components: {
     ServerBar
   },

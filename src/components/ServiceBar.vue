@@ -23,7 +23,7 @@
 
 <script>
 export default {
-  name: "SiteBar",
+  name: "ServiceBar",
   props: {
     name: {
       type: String,
