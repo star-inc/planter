@@ -8,7 +8,7 @@
         If there is any problem occurred and not reported at the status page.
       </v-card-subtitle>
       <v-card-text>
-        <v-text-field label="Title" />
+        <v-text-field label="Title"/>
         <v-select
             :items="items"
             label="Type"
@@ -39,7 +39,7 @@
               @change="save"
           />
         </v-menu>
-        <v-textarea label="Details" no-resize />
+        <v-textarea label="Details" no-resize/>
       </v-card-text>
       <v-card-actions>
         <v-btn class="primary">

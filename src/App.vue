@@ -67,8 +67,8 @@
             :height="$store.state.screenSize.height - flexible[1]"
             :width="$store.state.screenSize.width"
             class="mx-auto overflow-y-auto"
-            @scroll="mainScrolled"
             flat
+            @scroll="mainScrolled"
         >
           <router-view/>
         </v-card>

@@ -1,4 +1,4 @@
 <template>
-  <v-container>
-  </v-container>
+  <v-list>
+  </v-list>
 </template>
