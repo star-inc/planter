@@ -9,14 +9,18 @@ const ProviderInterface = require("./interface");
 
 const {hashCompare} = require("../../utils");
 
-module.exports = class extends ProviderInterface {
+/**
+ * GitHub is a company offering a cloud-based Git repository.
+ * @type {GitHub}
+ */
+module.exports = class GitHub extends ProviderInterface {
     /**
-     *
-     * @param _
+     * This is the construct for GitHub.
+     * @param config
      * @param timestamp
      */
-    constructor(_, timestamp) {
-        super(_, timestamp);
+    constructor(config, timestamp) {
+        super(config, timestamp);
         this.timestamp = timestamp;
         this.owner = process.env.INCIDENT_OWNER;
         this.repository = process.env.INCIDENT_REPOSITORY;
@@ -35,7 +39,7 @@ module.exports = class extends ProviderInterface {
     }
 
     /**
-     *
+     * This is issue method, to be used for updating incidents.
      * @param data
      * @returns {Promise<(*|*)[]>}
      */
