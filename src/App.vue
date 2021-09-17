@@ -1,5 +1,5 @@
 <template>
-  <v-app dark>
+  <v-app light>
     <v-card
         :height="$store.state.screenSize.height"
         :width="$store.state.screenSize.width"
