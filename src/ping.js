@@ -1,48 +1,46 @@
+"use strict";
+// p.mume planter
+// (c) 2022 Star Inc.
+// License: BSD 3-Clause License
+
 const axios = require("axios");
 
 const operator = axios.create();
 
-async function ping(config) {
-    if (!("servers" in config)) return;
+function ping(config) {
+    if (!config.servers) return;
     const serverPromises = config.servers.map(_pingServer);
-    return extractPromises(serverPromises);
+    return Promise
+        .all(serverPromises)
+        .filter(item => !!item);
 }
 
-async function extractPromises(promises) {
-    return (await Promise.all(promises)).filter(item => !!item)
+async function _pingServer(server) {
+    if (!server.endpoint) return;
+    server = await _getState(server.endpoint);
+    server.services = await new Promise
+        .all(server.services.map(_getState))
+        .filter(item => !!item);
+    return server;
 }
 
-async function _ping(endpoint) {
+async function _getState(endpoint) {
+    const result = await _doRequest(endpoint);
+    const isMetadataValid = typeof state.data === "string" && state.data.startsWith("\xef");
+
+    const state = {};
+    state.status = result.status;
+    state.metadata = isMetadataValid ? state.data : null;
+    return state;
+}
+
+async function _doRequest(endpoint) {
     try {
         return await operator.get(endpoint);
     } catch (e) {
         console.log(e);
         return e.response;
     }
-}
-
-async function _pingServer(server) {
-    if (!("endpoint" in server)) return;
-    const state = await _ping(server.endpoint);
-    server.status = state.status;
-    if (typeof state.data === "string" && state.data.startsWith("\xef")) {
-        server.metadata = state.data;
-    }
-    if (("services" in server)) {
-        const servicePromises = server.services.map(_pingService);
-        server.services = await extractPromises(servicePromises)
-    }
-    return server;
-}
-
-async function _pingService(service) {
-    if (!("endpoint" in service)) return;
-    const state = await _ping(service.endpoint);
-    service.status = state.status;
-    if (typeof state.data === "string" && state.data.startsWith("\xef")) {
-        service.metadata = state.data;
-    }
-    return service;
 }
 
 module.exports = ping;

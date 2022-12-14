@@ -21,4 +21,6 @@ servers:
         endpoint: "https://example.com"
 
 webhooks:
-  - https://example.com
+  - name: Example
+    endpoint: "https://example.com"
+    format: '{"content":"%content%"}'
