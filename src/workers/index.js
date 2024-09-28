@@ -5,17 +5,21 @@ import {
 
 const redirectCodes = [301, 302, 307, 308];
 
-const { preflight, corsify } = cors();
-const precorsify = (...args) => {
+const {
+  preflight: preCorsify,
+  corsify,
+} = cors();
+const endCorsify = (...args) => {
   const [res] = args;
   if (redirectCodes.includes(res?.status)) {
     return res;
   }
   return corsify(...args)
-}
+};
+
 const router = AutoRouter({
-  before: [preflight],
-  finally: [precorsify],
+  before: [preCorsify],
+  finally: [endCorsify],
 });
 
 router.
@@ -24,11 +28,68 @@ router.
     const statusCode = 301;
     return Response.redirect(dstUrl, statusCode);
   }).
-  get("/states", () => {
-    return "Loaded";
+  get("/nodes", async (_, env) => {
+    const stmt = env.DB.prepare(
+      "SELECT nodes.id, nodes.type, nodes.displayName, nodes.httpUrl, nodes.httpStatus, COUNT(services.id) AS serviceCount FROM nodes LEFT JOIN services ON nodes.id = services.nodeId",
+    );
+    const { results } = await stmt.all();
+    return results;
   }).
-  get("/states/:id", ({ id }) => {
-    return id;
+  get("/nodes/:nodeId", async (req, env) => {
+    const { nodeId } = req;
+    const stmt = env.DB.prepare(
+      "SELECT id, displayName, httpUrl, httpStatus FROM services WHERE nodeId = ?",
+    ).bind(nodeId);
+    const { results } = await stmt.all();
+    return results;
   });
 
-export default router;
+const pingNodes = async (_, env) => {
+  const stmt = env.DB.prepare(
+    "SELECT id, httpUrl FROM nodes",
+  );
+  const { results } = await stmt.all();
+  await Promise.allSettled(
+    results.map(async ({ id, httpUrl }) => {
+      const {
+        status: httpStatus,
+      } = await fetch(httpUrl);
+      const stmt = env.DB.prepare(
+        "UPDATE nodes SET httpStatus = ? WHERE id = ?",
+      ).bind(httpStatus, id);
+      await stmt.run();
+    })
+  );
+};
+
+const pingServices = async (_, env) => {
+  const stmt = env.DB.prepare(
+    "SELECT * FROM services",
+  );
+  const { results } = await stmt.all();
+  await Promise.allSettled(
+    results.map(async ({ id, httpUrl }) => {
+      const {
+        status: httpStatus,
+      } = await fetch(httpUrl);
+      const stmt = env.DB.prepare(
+        "UPDATE services SET httpStatus = ? WHERE id = ?",
+      ).bind(httpStatus, id);
+      await stmt.run();
+    })
+  );
+};
+
+const scheduled = async (...args) => {
+  const [_req, _env, ctx] = args;
+  const handlers = [pingNodes, pingServices];
+  const lifeCycle = Promise.all(
+    handlers.map((c) => c(...args)),
+  );
+  ctx.waitUntil(lifeCycle);
+};
+
+export default {
+  ...router,
+  scheduled,
+};

@@ -5,8 +5,16 @@ main = "src/workers/index.js"
 compatibility_date = "2024-09-25"
 compatibility_flags = ["nodejs_compat"]
 
+[triggers]
+crons = ["*/5 * * * *"]
+
 [observability]
 enabled = true
 
 [vars]
 PAGE_ORIGIN="https://status.starinc.xyz"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "planter"
+database_id = "c607126c-23b0-4d60-ab4f-c8f72077b30a"
