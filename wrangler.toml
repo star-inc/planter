@@ -7,3 +7,6 @@ compatibility_flags = ["nodejs_compat"]
 
 [observability]
 enabled = true
+
+[vars]
+PAGE_ORIGIN="https://status.starinc.xyz"
