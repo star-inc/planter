@@ -3,10 +3,19 @@ import {
   cors,
 } from "itty-router";
 
+const redirectCodes = [301, 302, 307, 308];
+
 const { preflight, corsify } = cors();
+const precorsify = (...args) => {
+  const [res] = args;
+  if (redirectCodes.includes(res?.status)) {
+    return res;
+  }
+  return corsify(...args)
+}
 const router = AutoRouter({
   before: [preflight],
-  finally: [corsify],
+  finally: [precorsify],
 });
 
 router.
