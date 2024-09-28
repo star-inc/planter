@@ -24,6 +24,9 @@ router.
     const statusCode = 301;
     return Response.redirect(dstUrl, statusCode);
   }).
+  get("/states", () => {
+    return "Loaded";
+  }).
   get("/states/:id", ({ id }) => {
     return id;
   });
