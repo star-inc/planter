@@ -13,6 +13,9 @@ enabled = true
 
 [vars]
 PAGE_ORIGIN="https://status.starinc.xyz"
+MAIL_SENDGRID_API_KEY="secret"
+MAIL_REPORT_SENDER="noreply@status.starnc.xyz"
+MAIL_REPORT_RECEIVER="noreply@status.starnc.xyz"
 
 [[d1_databases]]
 binding = "DB"

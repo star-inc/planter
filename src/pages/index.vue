@@ -2,6 +2,7 @@
   <v-container>
     <v-card v-for="(i, j) in dataset" :key="j" flat>
       <v-card-title>{{ i.name }}</v-card-title>
+      <v-card-subtitle>{{ i.description }}</v-card-subtitle>
       <v-list v-model:opened="nodeExpanded" lines="two">
         <index-node-bar v-for="(k, l) in i.nodes" v-bind="k" :key="l" />
       </v-list>
@@ -11,22 +12,6 @@
         Last incident occurred: Unknown
       </v-card-text>
     </v-card>
-    <v-card class="text-center" flat>
-      <v-card-actions>
-        <v-spacer />
-        <v-btn v-if="!isExpanded" @click="isExpanded = true">
-          Expand
-        </v-btn>
-        <v-spacer />
-      </v-card-actions>
-    </v-card>
-    <v-expand-transition>
-      <div v-show="isExpanded">
-        <index-scheduled-maintenance />
-        <index-incident-overview />
-        <index-metrics-overview />
-      </div>
-    </v-expand-transition>
   </v-container>
 </template>
 
@@ -35,9 +20,6 @@ import { ref, reactive, computed, onMounted } from "vue";
 import { client } from "../clients/planter.js";
 
 import IndexNodeBar from "../components/IndexNodeBar";
-import IndexIncidentOverview from "../components/IndexIncidentOverview";
-import IndexMetricsOverview from "../components/IndexMetricsOverview";
-import IndexScheduledMaintenance from "../components/IndexScheduledMaintenance";
 
 const isExpanded = ref(false);
 const nodeExpanded = ref([]);
@@ -48,17 +30,30 @@ const links = reactive({});
 
 const dataset = computed(() => Object.
   entries(types).
-  sort((i, j) => i[1].priority < j[1].priority).
+  sort(
+    (i, j) => i[1].priority < j[1].priority,
+  ).
+  sort(
+    (i, j) => i[1].name < j[1].name,
+  ).
   map(([i, j]) => ({
     ...j,
     nodes: nodes.filter(
       (k) => k.typeId?.toString() === i,
-    ).map((k) => ({
-      ...k,
-      children: links[k.linkId]?.map(
-        (l) => nodes.find((m) => m.linkId === l),
-      ),
-    })),
+    ).
+      sort(
+        (i, j) => i.name < j.name,
+      ).
+      map((k) => ({
+        ...k,
+        children: links[k.linkId]?.
+          map(
+            (l) => nodes.find((m) => m.linkId === l),
+          ).
+          sort(
+            (i, j) => i.name < j.name,
+          ),
+      })),
   }))
 );
 
