@@ -48,6 +48,7 @@ const links = reactive({});
 
 const dataset = computed(() => Object.
   entries(types).
+  sort((i, j) => i[1].priority < j[1].priority).
   map(([i, j]) => ({
     ...j,
     nodes: nodes.filter(
