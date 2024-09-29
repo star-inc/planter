@@ -1,51 +1,74 @@
 CREATE TABLE
     IF NOT EXISTS nodeTypes (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        displayName VARCHAR(50) NOT NULL UNIQUE,
+        name VARCHAR(50) NOT NULL UNIQUE,
+        description TEXT,
         priorityClass INTEGER NOT NULL DEFAULT 0
+    );
+
+CREATE TABLE
+    IF NOT EXISTS nodeLinks (
+        childNodeId INTEGER PRIMARY KEY,
+        parentNodeId INTEGER NOT NULL,
+        FOREIGN KEY (childNodeId) REFERENCES nodes (id),
+        FOREIGN KEY (parentNodeId) REFERENCES nodes (id)
     );
 
 CREATE TABLE
     IF NOT EXISTS nodes (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name VARCHAR(50) NOT NULL UNIQUE,
+        description TEXT,
         type INTEGER,
-        displayName VARCHAR(50) NOT NULL UNIQUE,
+        httpVisible INTEGER NOT NULL DEFAULT 1,
         httpUrl TEXT NOT NULL,
         httpStatus INTEGER NOT NULL DEFAULT 0,
         FOREIGN KEY (type) REFERENCES nodeTypes (id)
     );
 
-CREATE TABLE
-    IF NOT EXISTS services (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        nodeId INTEGER,
-        displayName VARCHAR(50) NOT NULL UNIQUE,
-        httpUrl TEXT NOT NULL,
-        httpStatus INTEGER NOT NULL DEFAULT 0,
-        FOREIGN KEY (nodeId) REFERENCES nodes (id)
+INSERT INTO
+    nodeTypes (name, description)
+VALUES
+    (
+        'Infrastructure',
+        'Lorem ipsum odor amet, consectetuer adipiscing elit.'
     );
 
 INSERT INTO
-    nodeTypes (displayName)
+    nodes (name, description, type, httpUrl)
 VALUES
-    ('Infrastructure');
+    (
+        'Example Server',
+        'Lorem ipsum odor amet, consectetuer adipiscing elit.',
+        1,
+        'https://example.com'
+    );
 
 INSERT INTO
-    nodes (displayName, type, httpUrl)
-VALUES
-    ('Example Server', 1, 'https://example.com');
-
-INSERT INTO
-    nodes (displayName, type, httpUrl)
+    nodes (name, type, httpUrl)
 VALUES
     ('Error Server', 1, 'https://example.com/test404');
 
 INSERT INTO
-    services (displayName, nodeId, httpUrl)
+    nodes (name, httpUrl)
 VALUES
-    ('Example Service', 1, 'https://example.org');
+    ('Example Service', 'https://example.org');
 
 INSERT INTO
-    services (displayName, nodeId, httpUrl)
+    nodes (name, description, httpUrl)
 VALUES
-    ('Error Service', 1, 'https://example.org/test404');
+    (
+        'Error Service',
+        'Lorem ipsum odor amet, consectetuer adipiscing elit.',
+        'https://example.org/test404'
+    );
+
+INSERT INTO
+    nodeLinks (childNodeId, parentNodeId)
+VALUES
+    (3, 1);
+
+INSERT INTO
+    nodeLinks (childNodeId, parentNodeId)
+VALUES
+    (4, 1);

@@ -1,10 +1,10 @@
 <template>
   <v-list-item :prepend-icon="icon" :href="props.httpUrl" rel="noreferrer noopener" target="_blank">
     <v-list-item-title>
-      {{ props.displayName }}
+      {{ props.name }}
     </v-list-item-title>
     <v-list-item-subtitle>
-      {{ description }}
+      {{ props.description }}
     </v-list-item-subtitle>
   </v-list-item>
 </template>
@@ -13,7 +13,11 @@
 import { computed } from "vue";
 
 const props = defineProps({
-  displayName: {
+  name: {
+    type: String,
+    required: true,
+  },
+  description: {
     type: String,
     required: true,
   },

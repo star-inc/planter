@@ -30,18 +30,33 @@ router.
   }).
   get("/nodes", async (_, env) => {
     const stmt = env.DB.prepare(
-      "SELECT nodes.id, nodes.type, nodes.displayName, nodes.httpUrl, nodes.httpStatus, COUNT(services.id) AS serviceCount FROM nodes LEFT JOIN services ON nodes.id = services.nodeId GROUP BY nodes.id",
+      "SELECT nodes.id, nodes.name, nodes.description, nodes.httpVisible, nodes.httpStatus, nodes.httpUrl, nodeLinks.parentNodeId AS parentId, nodeTypes.id AS typeId, nodeTypes.name AS typeName, nodeTypes.priorityClass AS typePriority FROM nodes LEFT JOIN nodeLinks ON nodes.id = nodeLinks.childNodeId LEFT JOIN nodeTypes ON nodes.type = nodeTypes.id GROUP BY nodes.id",
     );
     const { results } = await stmt.all();
-    return results;
-  }).
-  get("/nodes/:nodeId", async (req, env) => {
-    const { nodeId } = req;
-    const stmt = env.DB.prepare(
-      "SELECT id, displayName, httpUrl, httpStatus FROM services WHERE nodeId = ?",
-    ).bind(nodeId);
-    const { results } = await stmt.all();
-    return results;
+    return {
+      nodes: results.map((i) => ({
+        name: i.name,
+        description: i.description,
+        typeId: i.typeId,
+        linkId: i.id,
+        httpStatus: i.httpStatus,
+        httpUrl: i.httpVisible ? i.httpUrl : null,
+      })),
+      types: Object.fromEntries(
+        results.
+          filter((i) => i.typeId !== null).
+          map((i) => ([i.typeId, {
+            name: i.typeName,
+            priority: i.typePriority,
+          }]))
+      ),
+      links: results.
+        filter((i) => i.parentId !== null).
+        reduce((i, j) => ({
+          ...i,
+          [j.parentId]: [...(i[j.parentId] || []), j.id],
+        }), {}),
+    };
   });
 
 const pingNodes = async (_, env) => {

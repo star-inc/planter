@@ -1,11 +1,25 @@
 <template>
-  <v-list-group v-if="props.serviceCount" :color="color" :value="listKey" no-action>
+  <v-list-group v-if="props.children" :color="color" :value="listKey" no-action>
     <template v-slot:activator="{ props: itemProps }">
-      <v-list-item v-bind="itemProps" :prepend-icon="icon" :title="props.displayName" />
+      <v-list-item v-bind="itemProps" :prepend-icon="icon">
+        <v-list-item-title>
+          {{ props.name }}
+        </v-list-item-title>
+        <v-list-item-subtitle>
+          {{ props.description }}
+        </v-list-item-subtitle>
+      </v-list-item>
     </template>
-    <index-service-bar v-for="(i, j) in services" :key="j" v-bind="i" />
+    <index-service-bar v-for="(i, j) in props.children" :key="j" v-bind="i" />
   </v-list-group>
-  <v-list-item v-else :prepend-icon="icon" :title="props.displayName" />
+  <v-list-item v-else :prepend-icon="icon" :href="props.httpUrl" rel="noreferrer noopener" target="_blank">
+    <v-list-item-title>
+      {{ props.name }}
+    </v-list-item-title>
+    <v-list-item-subtitle>
+      {{ props.description }}
+    </v-list-item-subtitle>
+  </v-list-item>
 </template>
 
 <script setup>
@@ -19,7 +33,11 @@ const props = defineProps({
     type: Number,
     required: true,
   },
-  displayName: {
+  name: {
+    type: String,
+    required: true,
+  },
+  description: {
     type: String,
     required: true,
   },
@@ -27,8 +45,12 @@ const props = defineProps({
     type: Number,
     required: true,
   },
-  serviceCount: {
-    type: Number,
+  httpUrl: {
+    type: String,
+    required: true,
+  },
+  children: {
+    type: [Array, null],
     required: true,
   },
 });
@@ -59,13 +81,5 @@ const icon = computed(() => {
       return "mdi-alert-circle-outline";
     }
   }
-});
-
-const services = reactive([]);
-onMounted(() => {
-  client.
-    get(`nodes/${props.id}`).
-    then((res) => res.json()).
-    then((data) => services.push(...data));
 });
 </script>

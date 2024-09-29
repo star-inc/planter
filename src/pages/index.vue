@@ -1,8 +1,11 @@
 <template>
   <v-container>
-    <v-list v-model:opened="nodeExpanded">
-      <index-node-bar v-for="(i, j) in nodes" :key="j" v-bind="i" />
-    </v-list>
+    <v-card v-for="(i, j) in dataset" :key="j" flat>
+      <v-card-title>{{ i.name }}</v-card-title>
+      <v-list v-model:opened="nodeExpanded" lines="two">
+        <index-node-bar v-for="(k, l) in i.nodes" v-bind="k" :key="l" />
+      </v-list>
+    </v-card>
     <v-card flat>
       <v-card-text>
         Last incident occurred: Unknown
@@ -19,7 +22,6 @@
     </v-card>
     <v-expand-transition>
       <div v-show="isExpanded">
-        <index-extra-services />
         <index-scheduled-maintenance />
         <index-incident-overview />
         <index-metrics-overview />
@@ -29,11 +31,10 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from "vue";
+import { ref, reactive, computed, onMounted } from "vue";
 import { client } from "../clients/planter.js";
 
 import IndexNodeBar from "../components/IndexNodeBar";
-import IndexExtraServices from "../components/IndexExtraServices";
 import IndexIncidentOverview from "../components/IndexIncidentOverview";
 import IndexMetricsOverview from "../components/IndexMetricsOverview";
 import IndexScheduledMaintenance from "../components/IndexScheduledMaintenance";
@@ -42,10 +43,32 @@ const isExpanded = ref(false);
 const nodeExpanded = ref([]);
 
 const nodes = reactive([]);
+const types = reactive({});
+const links = reactive({});
+
+const dataset = computed(() => Object.
+  entries(types).
+  map(([i, j]) => ({
+    ...j,
+    nodes: nodes.filter(
+      (k) => k.typeId?.toString() === i,
+    ).map((k) => ({
+      ...k,
+      children: links[k.linkId]?.map(
+        (l) => nodes.find((m) => m.linkId === l),
+      ),
+    })),
+  }))
+);
+
 onMounted(() => {
   client.
     get("nodes").
     then((res) => res.json()).
-    then((data) => nodes.push(...data));
+    then((data) => {
+      nodes.push(...data.nodes);
+      Object.assign(types, data.types);
+      Object.assign(links, data.links);
+    });
 })
 </script>
