@@ -59,12 +59,12 @@ router.
     };
   });
 
-const pingNodes = async (_, env) => {
+const scheduled = async (_event, env, ctx) => {
   const stmt = env.DB.prepare(
     "SELECT id, httpUrl FROM nodes",
   );
   const { results } = await stmt.all();
-  await Promise.allSettled(
+  const pingPromise = await Promise.allSettled(
     results.map(async ({ id, httpUrl }) => {
       const {
         status: httpStatus,
@@ -75,33 +75,7 @@ const pingNodes = async (_, env) => {
       await stmt.run();
     })
   );
-};
-
-const pingServices = async (_, env) => {
-  const stmt = env.DB.prepare(
-    "SELECT * FROM services",
-  );
-  const { results } = await stmt.all();
-  await Promise.allSettled(
-    results.map(async ({ id, httpUrl }) => {
-      const {
-        status: httpStatus,
-      } = await fetch(httpUrl);
-      const stmt = env.DB.prepare(
-        "UPDATE services SET httpStatus = ? WHERE id = ?",
-      ).bind(httpStatus, id);
-      await stmt.run();
-    })
-  );
-};
-
-const scheduled = async (...args) => {
-  const [_req, _env, ctx] = args;
-  const handlers = [pingNodes, pingServices];
-  const lifeCycle = Promise.all(
-    handlers.map((c) => c(...args)),
-  );
-  ctx.waitUntil(lifeCycle);
+  ctx.waitUntil(pingPromise);
 };
 
 export default {
