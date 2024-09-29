@@ -1,0 +1,10 @@
+{
+  "nav": {
+    "index": "Dashboard",
+    "incidents": "Incidents",
+    "metrics": "Metrics",
+    "subscribe": "Subscribe",
+    "about": "About",
+    "raise": "Raise Issue"
+  }
+}

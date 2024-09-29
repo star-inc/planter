@@ -30,7 +30,7 @@ router.
   }).
   get("/nodes", async (_, env) => {
     const stmt = env.DB.prepare(
-      "SELECT nodes.id, nodes.type, nodes.displayName, nodes.httpUrl, nodes.httpStatus, COUNT(services.id) AS serviceCount FROM nodes LEFT JOIN services ON nodes.id = services.nodeId",
+      "SELECT nodes.id, nodes.type, nodes.displayName, nodes.httpUrl, nodes.httpStatus, COUNT(services.id) AS serviceCount FROM nodes LEFT JOIN services ON nodes.id = services.nodeId GROUP BY nodes.id",
     );
     const { results } = await stmt.all();
     return results;
