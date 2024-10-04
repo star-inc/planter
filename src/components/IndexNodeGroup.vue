@@ -10,23 +10,15 @@
         </v-list-item-subtitle>
       </v-list-item>
     </template>
-    <index-service-bar v-for="(i, j) in props.children" :key="j" v-bind="i" />
+    <index-node-item v-for="(i, j) in props.children" :key="j" v-bind="i" />
   </v-list-group>
-  <v-list-item v-else :prepend-icon="icon" :href="props.httpUrl" rel="noreferrer noopener" target="_blank">
-    <v-list-item-title>
-      {{ props.name }}
-    </v-list-item-title>
-    <v-list-item-subtitle>
-      {{ props.description }}
-    </v-list-item-subtitle>
-  </v-list-item>
+  <index-node-item v-else v-bind="props" />
 </template>
 
 <script setup>
-import { ref, reactive, computed, onMounted } from "vue";
-import { client } from "../clients/planter.js";
+import { computed } from "vue";
 
-import IndexServiceBar from "./IndexServiceBar.vue";
+import IndexNodeItem from "./IndexNodeItem.vue";
 
 const props = defineProps({
   id: {

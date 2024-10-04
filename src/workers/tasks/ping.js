@@ -1,3 +1,11 @@
+import ky from "ky";
+
+const client = ky.extend({
+    headers: {
+        "User-Agent": "Planter/1.0",
+    },
+});
+
 export const ping = async (_event, env, _ctx) => {
     const stmt = env.DB.prepare(
         "SELECT id, httpUrl FROM nodes",
@@ -7,7 +15,7 @@ export const ping = async (_event, env, _ctx) => {
         results.map(async ({ id, httpUrl }) => {
             const {
                 status: httpStatus,
-            } = await fetch(httpUrl);
+            } = await client.get(httpUrl);
             const stmt = env.DB.prepare(
                 "UPDATE nodes SET httpStatus = ? WHERE id = ?",
             ).bind(httpStatus, id);

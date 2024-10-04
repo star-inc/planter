@@ -4,12 +4,12 @@
       <v-card-title>{{ i.name }}</v-card-title>
       <v-card-subtitle>{{ i.description }}</v-card-subtitle>
       <v-list v-model:opened="nodeExpanded" lines="two">
-        <index-node-bar v-for="(k, l) in i.nodes" v-bind="k" :key="l" />
+        <index-node-group v-for="(k, l) in i.nodes" v-bind="k" :key="l" />
       </v-list>
     </v-card>
     <v-card flat>
       <v-card-text>
-        Last incident occurred:
+        Last updated at:
         {{ updatedAt || "Unknown" }}
       </v-card-text>
     </v-card>
@@ -17,10 +17,18 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, onMounted } from "vue";
-import { client } from "../clients/planter.js";
+import {
+  ref,
+  reactive,
+  computed,
+  onMounted,
+} from "vue";
 
-import IndexNodeBar from "../components/IndexNodeBar";
+import {
+  usePlanterClient,
+} from "../clients/planter.js";
+
+import IndexNodeGroup from "../components/IndexNodeGroup.vue";
 
 const nodeExpanded = ref([]);
 const updatedAt = ref("");
@@ -56,9 +64,10 @@ const dataset = computed(() => Object.
 );
 
 onMounted(() => {
+  const client = usePlanterClient();
   client.
     get("nodes").
-    then((res) => res.json()).
+    json().
     then((data) => {
       nodes.push(...data.nodes);
       updatedAt.value = data.updatedAt;

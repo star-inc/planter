@@ -13,8 +13,8 @@ enabled = true
 
 [vars]
 PAGE_ORIGIN="https://status.starinc.xyz"
-MAIL_REPORT_SENDER="noreply@status.starnc.xyz"
-MAIL_REPORT_RECEIVER="noreply@status.starnc.xyz"
+MAIL_REPORT_SENDER="noreply@status.starinc.xyz"
+MAIL_REPORT_RECEIVER="noreply@status.starinc.xyz"
 
 [[kv_namespaces]]
 binding = "KV"
