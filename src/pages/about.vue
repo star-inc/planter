@@ -6,6 +6,11 @@
         Status page based on CloudFlare Worker.
       </v-card-subtitle>
       <v-card-text>
+        <a class="text-decoration-none text-primary" href="https://github.com/star-inc/planter">
+          GitHub Repository
+        </a>
+      </v-card-text>
+      <v-card-text>
         &copy; 2024
         <a class="text-decoration-none text-primary" href="https://starinc.xyz">
           Star Inc.

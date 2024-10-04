@@ -33,7 +33,7 @@
         </v-card-text>
         <v-card-actions>
           <v-spacer />
-          <v-btn color="primary" type="submit">
+          <v-btn color="primary" :loading="loading" type="submit">
             Submit
           </v-btn>
         </v-card-actions>
@@ -69,10 +69,18 @@ const router = useRouter();
 const client = usePlanterClient();
 
 const types = [
-  "Other"
+  "Site Down",
+  "App Crashes",
+  "Network Issues",
+  "Domain/DNS Issues",
+  "TLS/SSL Issues",
+  "Resource Missing",
+  "Report Phishing/Malware",
+  "Other/Unknown"
 ];
 
 const sent = ref(false);
+const loading = ref(false);
 const snackbar = ref(false);
 const snackbarText = ref("Unknown");
 
@@ -90,6 +98,7 @@ async function onSubmit() {
   }
 
   try {
+    loading.value = true;
     const values = new FormData(ticket.$el);
     await client.post("issues", {
       body: values,
@@ -98,6 +107,8 @@ async function onSubmit() {
   } catch (e) {
     snackbarText.value = e.message;
     snackbar.value = true;
+  } finally {
+    loading.value = false;
   }
 }
 

@@ -1,16 +1,32 @@
 <template>
   <v-container>
-    <v-card v-for="(i, j) in dataset" :key="j" class="my-3" flat>
-      <v-card-title>{{ i.name }}</v-card-title>
-      <v-card-subtitle>{{ i.description }}</v-card-subtitle>
-      <v-list v-model:opened="nodeExpanded" lines="two">
-        <index-node-group v-for="(k, l) in i.nodes" v-bind="k" :key="l" />
-      </v-list>
-    </v-card>
-    <v-card flat>
+    <div v-if="loading" class="text-center">
+      <v-progress-circular color="primary" indeterminate />
+    </div>
+    <div v-else-if="dataset.length">
+      <v-card v-for="(i, j) in dataset" :key="j" class="my-3" flat>
+        <v-card-title>{{ i.name }}</v-card-title>
+        <v-card-subtitle>{{ i.description }}</v-card-subtitle>
+        <v-list v-model:opened="nodeExpanded" lines="two">
+          <index-node-group v-for="(k, l) in i.nodes" v-bind="k" :key="l" />
+        </v-list>
+      </v-card>
+      <v-card flat>
+        <v-card-text>
+          Last updated at:
+          {{ updatedAt || "Unknown" }}
+        </v-card-text>
+      </v-card>
+    </div>
+    <v-card v-else>
+      <v-card-title>
+        None <v-icon>mdi-close</v-icon>
+      </v-card-title>
+      <v-card-subtitle>
+        There is noting.
+      </v-card-subtitle>
       <v-card-text>
-        Last updated at:
-        {{ updatedAt || "Unknown" }}
+        Add your nodes to start monitoring.
       </v-card-text>
     </v-card>
   </v-container>
@@ -31,6 +47,7 @@ import {
 import IndexNodeGroup from "../components/IndexNodeGroup.vue";
 
 const nodeExpanded = ref([]);
+const loading = ref(true);
 const updatedAt = ref("");
 
 const nodes = reactive([]);
@@ -73,6 +90,8 @@ onMounted(() => {
       updatedAt.value = data.updatedAt;
       Object.assign(types, data.types);
       Object.assign(links, data.links);
+    }).finally(() => {
+      loading.value = false;
     });
 })
 </script>
