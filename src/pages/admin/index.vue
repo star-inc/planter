@@ -1,0 +1,9 @@
+<template>
+  <v-container>
+    <v-card>
+      <v-card-title>
+        Admin
+      </v-card-title>
+    </v-card>
+  </v-container>
+</template>

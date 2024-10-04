@@ -15,6 +15,7 @@
     "core-js": "^3.37.1",
     "http-status-codes": "^2.3.0",
     "ky": "^1.7.2",
+    "nanoid": "^5.0.7",
     "roboto-fontface": "*",
     "vue": "^3.4.37",
     "vue-turnstile": "^1.0.11",

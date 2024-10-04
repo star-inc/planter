@@ -25,11 +25,6 @@
           Metrics
         </v-list-item-title>
       </v-list-item>
-      <v-list-item link to="/subscribe">
-        <v-list-item-title>
-          Subscribe
-        </v-list-item-title>
-      </v-list-item>
       <v-list-item link to="/about">
         <v-list-item-title>
           About
