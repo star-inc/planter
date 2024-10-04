@@ -18,6 +18,16 @@ const redirectCodes = [
     StatusCodes.TEMPORARY_REDIRECT,
     StatusCodes.PERMANENT_REDIRECT,
 ];
+const issueTypes = [
+    "Site Down",
+    "App Crashes",
+    "Network Issues",
+    "Domain/DNS Issues",
+    "TLS/SSL Issues",
+    "Resource Missing",
+    "Report Phishing/Malware",
+    "Other/Unknown"
+];
 
 const {
     preflight: preCorsify,
@@ -81,14 +91,27 @@ router.post("/issues", withContent, async (req, env) => {
 
     const title = content.get("title");
     const type = content.get("type");
+    const contact = content.get("contact");
     const details = content.get("details");
 
     const turnstileToken = content.get("cf-turnstile-response");
     const turnstileSecret = env.TURNSTILE_SECRET_KEY;
     const connectingIp = headers.get('CF-Connecting-IP') || "127.0.0.1";
 
-    if (!title || !type || !details || !turnstileToken) {
-        return new Response("Bad Request", {
+    if (!title || !type || !contact || !details || !turnstileToken) {
+        return new Response("Empty Fields", {
+            status: StatusCodes.BAD_REQUEST,
+        });
+    }
+
+    if (!issueTypes.includes(type)) {
+        return new Response("Invalid Type", {
+            status: StatusCodes.BAD_REQUEST,
+        });
+    }
+
+    if (!/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(contact)) {
+        return new Response("Invalid Contact", {
             status: StatusCodes.BAD_REQUEST,
         });
     }
@@ -101,7 +124,7 @@ router.post("/issues", withContent, async (req, env) => {
         connectingIp,
     });
     if (!turnstileSuccess) {
-        return new Response("Forbidden", {
+        return new Response("Invalid Turnstile", {
             status: StatusCodes.FORBIDDEN,
         });
     }
@@ -111,18 +134,21 @@ router.post("/issues", withContent, async (req, env) => {
     try {
         const from = env.MAIL_REPORT_SENDER;
         const to = env.MAIL_REPORT_RECEIVER;
+
         const subject = `Status Issue - [${type}] ${title}`;
-        const text = `Title: ${title}\n` +
-            `Type: ${type}\n` +
-            `IP Address: ${connectingIp}\n\n` +
+        const text = `Issue Title: ${title}\n` +
+            `Issue Type: ${type}\n\n` +
+            `Source Address: ${connectingIp}\n` +
+            `Source Contact: ${contact}\n\n` +
             `${details}\n`;
+
         const message = { from, to, subject, text };
         await mailer.send(message);
     } catch (e) {
         console.error(e);
     }
 
-    return new Response("Accepted", {
+    return new Response("Thank you!", {
         status: StatusCodes.ACCEPTED,
     });
 });

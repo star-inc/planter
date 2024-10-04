@@ -26,10 +26,17 @@
           If there is any problem occurred and not reported at the status page.
         </v-card-subtitle>
         <v-card-text>
-          <v-text-field label="Title" name="title" :rules="rules" required />
-          <v-select label="Type" name="type" :rules="rules" :items="types" required />
-          <v-textarea label="Details" name="details" :rules="rules" no-resize required />
+          <v-text-field label="Issue Title" name="title" :rules="rules" required />
+          <v-select label="Issue Type" name="type" :rules="rules" :items="types" required />
+          <v-text-field label="Your Email" name="contact" :rules="rulesEmail" required />
+          <v-textarea label="Issue Details" name="details" :rules="rules" no-resize required />
           <vue-turnstile :site-key="turnstileSiteKey" />
+          <v-checkbox
+            label="I hereby certify the provided information is true and accurate, my IP address will be recorded."
+            name="allow-truthy" :rules="rules" required />
+          <v-checkbox
+            label="The Email address will be used to contact with the issue only, won't be used for marketing."
+            name="allow-email" :rules="rules" required />
         </v-card-text>
         <v-card-actions>
           <v-spacer />
@@ -88,6 +95,10 @@ const ticketRef = ref(null);
 
 const rules = [
   (v) => !!v || "Required",
+];
+const rulesEmail = [
+  ...rules,
+  (v) => /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(v) || "Invalid Format"
 ];
 
 async function onSubmit() {
