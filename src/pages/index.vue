@@ -1,6 +1,6 @@
 <template>
   <v-container>
-    <v-card v-for="(i, j) in dataset" :key="j" flat>
+    <v-card v-for="(i, j) in dataset" :key="j" class="my-3" flat>
       <v-card-title>{{ i.name }}</v-card-title>
       <v-card-subtitle>{{ i.description }}</v-card-subtitle>
       <v-list v-model:opened="nodeExpanded" lines="two">
@@ -9,7 +9,8 @@
     </v-card>
     <v-card flat>
       <v-card-text>
-        Last incident occurred: Unknown
+        Last incident occurred:
+        {{ updatedAt || "Unknown" }}
       </v-card-text>
     </v-card>
   </v-container>
@@ -21,8 +22,8 @@ import { client } from "../clients/planter.js";
 
 import IndexNodeBar from "../components/IndexNodeBar";
 
-const isExpanded = ref(false);
 const nodeExpanded = ref([]);
+const updatedAt = ref("");
 
 const nodes = reactive([]);
 const types = reactive({});
@@ -31,10 +32,7 @@ const links = reactive({});
 const dataset = computed(() => Object.
   entries(types).
   sort(
-    (i, j) => i[1].priority < j[1].priority,
-  ).
-  sort(
-    (i, j) => i[1].name < j[1].name,
+    (i, j) => i[1].priority < j[1].priority ? 1 : -1,
   ).
   map(([i, j]) => ({
     ...j,
@@ -42,7 +40,7 @@ const dataset = computed(() => Object.
       (k) => k.typeId?.toString() === i,
     ).
       sort(
-        (i, j) => i.name < j.name,
+        (i, j) => i.name > j.name ? 1 : -1,
       ).
       map((k) => ({
         ...k,
@@ -51,7 +49,7 @@ const dataset = computed(() => Object.
             (l) => nodes.find((m) => m.linkId === l),
           ).
           sort(
-            (i, j) => i.name < j.name,
+            (i, j) => i.name > j.name ? 1 : -1,
           ),
       })),
   }))
@@ -63,6 +61,7 @@ onMounted(() => {
     then((res) => res.json()).
     then((data) => {
       nodes.push(...data.nodes);
+      updatedAt.value = data.updatedAt;
       Object.assign(types, data.types);
       Object.assign(links, data.links);
     });
