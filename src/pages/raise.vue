@@ -22,7 +22,7 @@
         <v-card-title>
           Raise Issue
         </v-card-title>
-        <v-card-subtitle>
+        <v-card-subtitle class="force-wrap">
           If there is any problem occurred and not reported at the status page.
         </v-card-subtitle>
         <v-card-text>
@@ -36,7 +36,7 @@
             name="allow-truthy" :rules="rules" required />
           <v-checkbox
             label="The Email address will be used to contact with the issue only, won't be used for marketing."
-            name="allow-email" :rules="rules" required />
+            name="allow-contact" :rules="rules" required />
         </v-card-text>
         <v-card-actions>
           <v-spacer />
@@ -131,3 +131,9 @@ function onPressClose() {
   snackbar.value = false;
 }
 </script>
+
+<style scoped>
+.force-wrap {
+  white-space: normal;
+}
+</style>

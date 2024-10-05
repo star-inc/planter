@@ -9,6 +9,10 @@ import {
 } from "http-status-codes";
 
 import {
+    nanoid,
+} from "nanoid";
+
+import {
     validResponse,
 } from "../clients/turnstile";
 
@@ -129,6 +133,9 @@ router.post("/issues", withContent, async (req, env) => {
         });
     }
 
+    const id = nanoid();
+    const date = new Date().toISOString();
+
     const mailer = await import("@sendgrid/mail");
     mailer.setApiKey(env.MAIL_SENDGRID_API_KEY);
     try {
@@ -136,10 +143,15 @@ router.post("/issues", withContent, async (req, env) => {
         const to = env.MAIL_REPORT_RECEIVER;
 
         const subject = `Status Issue - [${type}] ${title}`;
-        const text = `Issue Title: ${title}\n` +
-            `Issue Type: ${type}\n\n` +
-            `Source Address: ${connectingIp}\n` +
-            `Source Contact: ${contact}\n\n` +
+        const text = "[Issue]\n" +
+            `Title: ${title}\n` +
+            `Type: ${type}\n` +
+            `ID: ${id}\n` +
+            "---\n[Source]\n" +
+            `Date: ${date}\n` +
+            `Address: ${connectingIp}\n` +
+            `Contact: ${contact}\n` +
+            "---\n\n" +
             `${details}\n`;
 
         const message = { from, to, subject, text };
@@ -150,6 +162,11 @@ router.post("/issues", withContent, async (req, env) => {
 
     return new Response("Thank you!", {
         status: StatusCodes.ACCEPTED,
+        headers: {
+            "x-planter-issue-id": id,
+            "x-planter-source-ip": connectingIp,
+            "x-planter-source-contact": contact,
+        },
     });
 });
 
