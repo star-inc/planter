@@ -55,7 +55,7 @@ bun install
 ### 2. Initialize Local Database
 
 ```bash
-bunx wrangler d1 execute planter --local --file=./initialize.sql
+bunx wrangler d1 migrations apply planter --local
 ```
 
 ### 3. Run Development Server
@@ -81,7 +81,7 @@ Create a D1 Database and a KV Namespace in your Cloudflare dashboard, and update
 Initialize the remote database:
 
 ```bash
-bunx wrangler d1 execute planter --remote --file=./initialize.sql
+bunx wrangler d1 migrations apply planter --remote
 ```
 
 ### 2. Set Up Environment Variables

@@ -1,0 +1,10 @@
+-- Migration number: 0001 	 2026-06-28T13:18:44.938Z
+
+CREATE TABLE IF NOT EXISTS events (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    nodeId INTEGER NOT NULL,
+    previousStatus INTEGER NOT NULL DEFAULT 0,
+    newStatus INTEGER NOT NULL DEFAULT 0,
+    createdAt TEXT NOT NULL,
+    FOREIGN KEY (nodeId) REFERENCES nodes (id)
+);

@@ -1,3 +1,5 @@
+-- Migration number: 0000 	 2026-06-28T00:00:00.000Z
+
 CREATE TABLE
     IF NOT EXISTS nodeTypes (
         id INTEGER PRIMARY KEY AUTOINCREMENT,

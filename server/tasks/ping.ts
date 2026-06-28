@@ -1,6 +1,7 @@
 interface PingNode {
   id: number;
   httpUrl: string;
+  httpStatus: number;
 }
 
 interface CloudflareContext {
@@ -36,7 +37,7 @@ export default defineTask({
     const {DB, KV} = cloudflare.env;
 
     try {
-      const stmt = DB.prepare('SELECT id, httpUrl FROM nodes');
+      const stmt = DB.prepare('SELECT id, httpUrl, httpStatus FROM nodes');
       const {results} = await stmt.all();
 
       await Promise.allSettled(
@@ -56,6 +57,19 @@ export default defineTask({
                   fetchErr,
               );
               httpStatus = 0;
+            }
+
+            if (httpStatus !== node.httpStatus) {
+              const insertEventStmt = DB.prepare(
+                  'INSERT INTO events (nodeId, previousStatus, ' +
+                  'newStatus, createdAt) VALUES (?, ?, ?, ?)',
+              ).bind(
+                  node.id,
+                  node.httpStatus,
+                  httpStatus,
+                  new Date().toISOString(),
+              );
+              await insertEventStmt.run();
             }
 
             const updateStmt = DB.prepare(

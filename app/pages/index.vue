@@ -144,7 +144,7 @@
                 <!-- Status Badge -->
                 <div class="shrink-0">
                   <UBadge
-                    :color="isOperational(node.httpStatus) ? 'success' : 'danger'"
+                    :color="isOperational(node.httpStatus) ? 'success' : 'error'"
                     variant="soft"
                     size="sm"
                   >
@@ -189,7 +189,7 @@
 
                   <div class="shrink-0">
                     <UBadge
-                      :color="isOperational(child.httpStatus) ? 'success' : 'danger'"
+                      :color="isOperational(child.httpStatus) ? 'success' : 'error'"
                       variant="soft"
                       size="xs"
                     >
@@ -212,6 +212,47 @@
           There are no nodes currently setup for monitoring. Please add nodes in your D1 database.
         </p>
       </UCard>
+
+      <!-- Recent Status Events Section -->
+      <div v-if="events.length" class="mt-12">
+        <h3 class="text-xl font-bold text-zinc-950 mb-4 tracking-tight flex items-center gap-2">
+          <UIcon name="i-heroicons-clock" class="w-5 h-5 text-zinc-500" />
+          Recent Events
+        </h3>
+        <UCard class="shadow-sm border border-zinc-200/80 rounded-2xl overflow-hidden" :ui="{ body: 'p-0 sm:p-0' }">
+          <div class="divide-y divide-zinc-100">
+            <div v-for="eventItem in events" :key="eventItem.id" class="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div class="flex items-start sm:items-center gap-3">
+                <div class="p-2 rounded-xl bg-zinc-100/80 shrink-0">
+                  <UIcon :name="isOperational(eventItem.newStatus) ? 'i-heroicons-arrow-trending-up-20-solid' : 'i-heroicons-arrow-trending-down-20-solid'" :class="isOperational(eventItem.newStatus) ? 'text-emerald-600' : 'text-rose-600'" class="w-5 h-5" />
+                </div>
+                <div>
+                  <span class="font-semibold text-zinc-900 text-sm block sm:inline">{{ eventItem.nodeName }}</span>
+                  <span class="text-xs text-zinc-500 sm:ml-2">
+                    Status changed from
+                    <span class="font-medium text-zinc-700">{{ eventItem.previousStatus }}</span>
+                    to
+                    <span class="font-medium text-zinc-700">{{ eventItem.newStatus }}</span>
+                  </span>
+                </div>
+              </div>
+              <div class="text-left sm:text-right shrink-0">
+                <UBadge
+                  :color="isOperational(eventItem.newStatus) ? 'success' : 'error'"
+                  variant="soft"
+                  size="xs"
+                  class="mb-1"
+                >
+                  {{ isOperational(eventItem.newStatus) ? 'Operational' : 'Outage' }}
+                </UBadge>
+                <div class="text-[10px] text-zinc-400">
+                  {{ new Date(eventItem.createdAt).toLocaleString() }}
+                </div>
+              </div>
+            </div>
+          </div>
+        </UCard>
+      </div>
 
       <!-- Last Updated Timestamp Footer -->
       <div v-if="updatedAt" class="mt-8 text-center text-xs text-zinc-400 flex items-center justify-center gap-1">
@@ -251,12 +292,22 @@ interface TypeConfig {
   priority: number;
 }
 
+interface StatusEvent {
+  id: number;
+  nodeId: number;
+  nodeName: string;
+  previousStatus: number;
+  newStatus: number;
+  createdAt: string;
+}
+
 const loading = ref(true);
 const updatedAt = ref('');
 
 const nodes = ref<Node[]>([]);
 const types = ref<Record<number, TypeConfig>>({});
 const links = ref<Record<number, number[]>>({});
+const events = ref<StatusEvent[]>([]);
 
 const isOperational = (status: number) => status === 200 || status === 204;
 
@@ -313,6 +364,15 @@ interface NodesApiResponse {
   updatedAt: string;
 }
 
+const fetchEvents = async () => {
+  try {
+    const data = await $fetch<{events: StatusEvent[]}>('/api/events');
+    events.value = data.events || [];
+  } catch (err) {
+    console.error('Failed to fetch events:', err);
+  }
+};
+
 const fetchData = async () => {
   loading.value = true;
   try {
@@ -321,6 +381,7 @@ const fetchData = async () => {
     updatedAt.value = data.updatedAt || '';
     types.value = data.types || {};
     links.value = data.links || {};
+    await fetchEvents();
   } catch (err) {
     console.error('Failed to fetch status data:', err);
   } finally {
@@ -332,3 +393,4 @@ onMounted(() => {
   fetchData();
 });
 </script>
+
