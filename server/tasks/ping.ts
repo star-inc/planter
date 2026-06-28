@@ -1,6 +1,7 @@
 interface PingNode {
   id: number;
   httpUrl: string;
+  healthzUrl: string | null;
   httpStatus: number;
 }
 
@@ -37,14 +38,17 @@ export default defineTask({
     const {DB, KV} = cloudflare.env;
 
     try {
-      const stmt = DB.prepare('SELECT id, httpUrl, httpStatus FROM nodes');
+      const stmt = DB.prepare(
+          'SELECT id, httpUrl, healthzUrl, httpStatus FROM nodes',
+      );
       const {results} = await stmt.all();
 
       await Promise.allSettled(
           results.map(async (node: PingNode) => {
+            const targetUrl = node.healthzUrl || node.httpUrl;
             let httpStatus = 0;
             try {
-              const res = await fetch(node.httpUrl, {
+              const res = await fetch(targetUrl, {
                 headers: {
                   'User-Agent': 'Planter/1.0',
                 },
@@ -53,7 +57,7 @@ export default defineTask({
               httpStatus = res.status;
             } catch (fetchErr) {
               console.error(
-                  `Failed to ping node ${node.id} (${node.httpUrl}):`,
+                  `Failed to ping node ${node.id} (${targetUrl}):`,
                   fetchErr,
               );
               httpStatus = 0;
