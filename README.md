@@ -86,6 +86,12 @@ bunx wrangler d1 migrations apply planter --remote
 
 ### 2. Set Up Environment Variables
 
+To generate a secure token/passphrase for the `healthzPass` database column, we recommend running:
+
+```bash
+openssl rand -base64 32
+```
+
 Configure the following variables in the Cloudflare dashboard or via Wrangler:
 
 #### Variables (Vars)
