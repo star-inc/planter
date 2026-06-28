@@ -1,63 +1,112 @@
-# Nuxt 3 Minimal Starter
+# Planter - Star Inc. System Status
 
-Look at the [Nuxt 3 documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
+Planter is a system status dashboard designed for Star Inc.
 
-## Setup
+Built on Nuxt and Cloudflare (Pages, Workers, D1 Database, KV), it features automated system checking (Ping), node dependency mapping, and an issue reporting page protected by Cloudflare Turnstile.
 
-Make sure to install the dependencies:
+---
 
-```bash
-# npm
-npm install
+## Features
 
-# pnpm
-pnpm install
+- Status Dashboard: Displays the HTTP status of monitored nodes (Operational, Partial Outage, Major Outage).
+- Automated Health Checks: Uses Cloudflare Cron Triggers and Nitro Tasks to test node HTTP endpoints periodically and update the D1 database.
+- Node Dependencies: Supports parent-child relationships between nodes (nodeLinks).
+- Issue Reporting: Allows users to report issues via the /raise page, secured by Cloudflare Turnstile and notified via SendGrid emails.
 
-# yarn
-yarn install
+---
+
+## Tech Stack
+
+- Frontend & API Framework: Nuxt (Future Mode)
+- UI Library: Nuxt UI
+- Runtime Environment: Cloudflare Pages / Workers
+- Database & Storage: Cloudflare D1, Cloudflare KV
+- Bot Protection: Cloudflare Turnstile
+- Email Service: SendGrid Web API
+- Package Manager: Bun
+
+---
+
+## Project Structure
+
+```txt
+├── app/                  # Frontend application
+│   ├── components/       # Shared UI components
+│   ├── pages/            # Page routing and views
+│   └── assets/           # Static assets and CSS
+├── server/               # Backend API and background tasks
+│   ├── api/              # API endpoints
+│   └── tasks/            # Cron tasks (Ping checks)
+├── initialize.sql        # SQL script to set up D1 schema
+├── wrangler.jsonc        # Cloudflare Wrangler configuration
+└── package.json          # Package dependencies and scripts
 ```
 
-## Development Server
+---
 
-Start the development server on `http://localhost:3000`:
+## Local Development
 
-```bash
-# npm
-npm run dev
-
-# pnpm
-pnpm run dev
-
-# yarn
-yarn dev
-```
-
-## Production
-
-Build the application for production:
+### 1. Install Dependencies
 
 ```bash
-# npm
-npm run build
-
-# pnpm
-pnpm run build
-
-# yarn
-yarn build
+bun install
 ```
 
-Locally preview production build:
+### 2. Initialize Local Database
 
 ```bash
-# npm
-npm run preview
-
-# pnpm
-pnpm run preview
-
-# yarn
-yarn preview
+bunx wrangler d1 execute planter --local --file=./initialize.sql
 ```
 
-Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
+### 3. Run Development Server
+
+```bash
+bun run dev
+```
+
+To build and preview the application locally using the Cloudflare emulator (Miniflare):
+
+```bash
+bun run preview
+```
+
+---
+
+## Deployment
+
+### 1. Provision Cloudflare Resources
+
+Create a D1 Database and a KV Namespace in your Cloudflare dashboard, and update their respective IDs in wrangler.jsonc.
+
+Initialize the remote database:
+
+```bash
+bunx wrangler d1 execute planter --remote --file=./initialize.sql
+```
+
+### 2. Set Up Environment Variables
+
+Configure the following variables in the Cloudflare dashboard or via Wrangler:
+
+#### Variables (Vars)
+
+- PAGE_ORIGIN: The domain origin of the status page.
+- MAIL_REPORT_SENDER: The sender email address.
+- MAIL_REPORT_RECEIVER: The receiver email address for alerts.
+
+#### Secrets
+
+- TURNSTILE_SECRET_KEY: Cloudflare Turnstile secret key.
+- MAIL_SENDGRID_API_KEY: SendGrid API key.
+
+### 3. Deploy
+
+```bash
+bun run deploy
+```
+
+---
+
+## License
+
+This project is licensed under the MIT License.
