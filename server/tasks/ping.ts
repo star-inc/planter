@@ -2,6 +2,7 @@ interface PingNode {
   id: number;
   httpUrl: string;
   healthzUrl: string | null;
+  healthzPass: string | null;
   httpStatus: number;
 }
 
@@ -39,7 +40,8 @@ export default defineTask({
 
     try {
       const stmt = DB.prepare(
-          'SELECT id, httpUrl, healthzUrl, httpStatus FROM nodes',
+          'SELECT id, httpUrl, healthzUrl, healthzPass, httpStatus FROM ' +
+          'nodes',
       );
       const {results} = await stmt.all();
 
@@ -48,10 +50,15 @@ export default defineTask({
             const targetUrl = node.healthzUrl || node.httpUrl;
             let httpStatus = 0;
             try {
+              const headers: Record<string, string> = {
+                'User-Agent': 'Planter/1.0',
+              };
+              if (node.healthzPass) {
+                headers['X-Planter-Pass'] = node.healthzPass;
+              }
+
               const res = await fetch(targetUrl, {
-                headers: {
-                  'User-Agent': 'Planter/1.0',
-                },
+                headers,
                 signal: AbortSignal.timeout(5000),
               });
               httpStatus = res.status;
